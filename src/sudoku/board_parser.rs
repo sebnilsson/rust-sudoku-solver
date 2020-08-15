@@ -1,6 +1,6 @@
 use super::*;
 
-pub fn fill(board: &Board, sudoku_content: String) {
+pub fn fill<'a>(board: &'a Board, sudoku_content: String) {
     let sudoku_lines: Vec<&str> = sudoku_content.lines().collect();
 
     for x in 0..9 {
@@ -10,8 +10,9 @@ pub fn fill(board: &Board, sudoku_content: String) {
         for y in 0..9_usize {
             let number = numbers.get(y).unwrap_or_else(|| &"");
 
-            let cell = board.find_cell(x as u8, y as u8);
-            &cell.update(number);
+            let cell: &'a Cell = board.find_cell(x as u8, y as u8);
+            // TODO: Fix
+            //cell.update(number);
         }
     }
 }
