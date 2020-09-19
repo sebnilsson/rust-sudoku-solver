@@ -5,10 +5,10 @@ mod cell;
 mod number;
 mod region;
 
-pub fn solve<'a>(sudoku_content: String) -> Board<'a> {
+pub fn solve<'a>(sudoku_content: String) -> Board {
     let board = Board::parse(sudoku_content);
 
-    let last_total_potentials = -1;
+    let _last_total_potentials = -1;
 
     loop {
         board.solve_run();
@@ -24,11 +24,8 @@ pub fn solve<'a>(sudoku_content: String) -> Board<'a> {
 }
 
 #[derive(Debug)]
-pub struct Board<'a> {
+pub struct Board {
     cells: Vec<Cell>,
-    columns: Vec<Region<'a>>,
-    regions: Vec<Region<'a>>,
-    rows: Vec<Region<'a>>,
 }
 
 #[derive(Debug)]
