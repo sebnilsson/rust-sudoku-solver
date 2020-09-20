@@ -2,7 +2,7 @@ use super::*;
 
 impl<'a> Region<'a> {
     pub fn new() -> Self {
-        let cells: Vec<&'a Cell> = Vec::new();
+        let cells: Vec<&_> = Vec::new();
         Self { cells }
     }
 
@@ -12,9 +12,5 @@ impl<'a> Region<'a> {
             region.cells.push(x);
         }
         region
-    }
-
-    pub fn push_cell(&mut self, cell: &'a Cell) {
-        self.cells.push(cell);
     }
 }

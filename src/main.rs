@@ -1,9 +1,13 @@
-use std::fs;
-
 mod file_path;
 mod sudoku;
 
+use std::fs;
+use sudoku::Board;
+
 fn main() {
+    println!("Solving Sudoku...");
+    println!();
+
     let sudoku_content = sudoku_content();
     if sudoku_content.is_none() {
         return;
@@ -11,9 +15,16 @@ fn main() {
 
     let sudoku_content = sudoku_content.unwrap();
 
-    let board = sudoku::solve(sudoku_content);
-    println!("Result:");
+    let board = sudoku::solve(sudoku_content, board_callback);
+
+    println!("Solved:");
     println!("{}", board);
+}
+
+fn board_callback(board: &Board) {
+    println!("-> Progress:");
+    println!("{}", board);
+    println!();
 }
 
 fn sudoku_content() -> Option<String> {
@@ -32,6 +43,7 @@ fn sudoku_content() -> Option<String> {
 
     println!("File content:");
     println!("{}", file_content);
+    println!();
 
     Some(file_content)
 }

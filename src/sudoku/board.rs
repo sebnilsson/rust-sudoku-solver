@@ -3,11 +3,12 @@ use std::ops::Range;
 
 use super::*;
 
-impl Board {
-    // pub fn new() -> Self {
-    //     new_board()
-    // }
+#[cfg(windows)]
+const LINE_ENDING: &'static str = "\r\n";
+#[cfg(not(windows))]
+const LINE_ENDING: &'static str = "\n";
 
+impl Board {
     pub fn parse(sudoku_content: String) -> Self {
         let mut board = new_board();
         board_parser::fill(&mut board, sudoku_content);
@@ -17,16 +18,12 @@ impl Board {
 }
 
 impl Board {
-    pub fn find_cell(&self, x: u8, y: u8) -> &Cell {
-        find_cell(&self.cells, x, y)
-    }
     pub fn find_cell_mut(&mut self, x: u8, y: u8) -> &mut Cell {
         find_cell_mut(&mut self.cells, x, y)
     }
 
-    pub fn total_potentials(&self) -> usize {
-        let potentials = self.cells.iter().map(|x| x.potentials.len());
-        potentials.sum()
+    pub fn unsolved_count(&self) -> usize {
+        self.cells.iter().filter(|x| !x.is_solved()).count()
     }
 
     pub fn columns(&self) -> Vec<Region> {
@@ -40,26 +37,35 @@ impl Board {
     pub fn rows(&self) -> Vec<Region> {
         rows(&self.cells)
     }
-
-    pub fn solve_run(&self) {
-        board_solver::solve(self);
-    }
 }
 
 impl std::fmt::Display for Board {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mut result = String::new();
+        let rows = self.rows();
+        let row_count = rows.len() - 1;
 
-        for row in self.rows().iter() {
+        let mut s = String::new();
+        let mut index = 0;
+
+        for row in rows.iter() {
             let nums = row.cells.iter().map(|x| x.num.to_str());
-            let nums: Vec<String> = nums.collect();
+            let nums: Vec<_> = nums.collect();
 
             let r = nums.join(" ");
             let r = r.as_str();
-            result.push_str(r);
+
+            s.push_str(r);
+            if index != row_count {
+                s.push_str(LINE_ENDING);
+            }
+
+            index += 1;
         }
 
-        write!(f, "{}", result)
+        let line_ending = String::from(LINE_ENDING);
+        let s = s.trim_end_matches(&line_ending);
+
+        write!(f, "{}", s)
     }
 }
 
@@ -84,16 +90,16 @@ fn find_cell_mut<'a>(cells: &'a mut Vec<Cell>, x: u8, y: u8) -> &'a mut Cell {
 }
 
 fn new_board() -> Board {
-    let cells: Vec<Cell> = cells();
+    let cells: Vec<_> = cells();
 
     Board { cells }
 }
 
 fn cells<'a>() -> Vec<Cell> {
-    let mut cells: Vec<Cell> = Vec::new();
+    let mut cells: Vec<_> = Vec::new();
 
-    for x in 0..9 {
-        for y in 0..9 {
+    for x in 0..REGION_SIZE {
+        for y in 0..REGION_SIZE {
             let cell = Cell::new(x, y);
             cells.push(cell);
         }
@@ -103,12 +109,12 @@ fn cells<'a>() -> Vec<Cell> {
 }
 
 fn columns<'a>(cells: &'a Vec<Cell>) -> Vec<Region<'a>> {
-    let mut columns: Vec<Region<'a>> = Vec::new();
+    let mut columns: Vec<_> = Vec::new();
 
-    for y in 0..9 {
-        let mut column_cells: Vec<&Cell> = Vec::new();
+    for y in 0..REGION_SIZE {
+        let mut column_cells: Vec<_> = Vec::new();
 
-        for x in 0..9 {
+        for x in 0..REGION_SIZE {
             let cell = find_cell(cells, x, y);
             column_cells.push(cell);
         }
@@ -121,11 +127,11 @@ fn columns<'a>(cells: &'a Vec<Cell>) -> Vec<Region<'a>> {
 }
 
 fn index(x: u8, y: u8) -> usize {
-    (x + (y * 9)) as usize
+    (x + (y * REGION_SIZE)) as usize
 }
 
 fn regions<'a>(cells: &'a Vec<Cell>) -> Vec<Region<'a>> {
-    (0..9).map(|x| region(cells, x)).collect()
+    (0..REGION_SIZE as usize).map(|x| region(cells, x)).collect()
 }
 
 fn region<'a>(cells: &'a Vec<Cell>, region_index: usize) -> Region<'a> {
@@ -136,7 +142,7 @@ fn region<'a>(cells: &'a Vec<Cell>, region_index: usize) -> Region<'a> {
     let cells2 = &cells[region_indexes.1];
     let cells3 = &cells[region_indexes.2];
 
-    let mut region_cells: Vec<&Cell> = Vec::new();
+    let mut region_cells: Vec<_> = Vec::new();
     cells1.iter().for_each(|x| region_cells.push(x));
     cells2.iter().for_each(|x| region_cells.push(x));
     cells3.iter().for_each(|x| region_cells.push(x));
@@ -162,12 +168,12 @@ fn region_indexes(
 }
 
 fn rows<'a>(cells: &'a Vec<Cell>) -> Vec<Region<'a>> {
-    let mut rows: Vec<Region<'a>> = Vec::new();
+    let mut rows: Vec<_> = Vec::new();
 
-    for x in 0..9 {
-        let mut row_cells: Vec<&Cell> = Vec::new();
+    for x in 0..REGION_SIZE {
+        let mut row_cells: Vec<_> = Vec::new();
 
-        for y in 0..9 {
+        for y in 0..REGION_SIZE {
             let cell = find_cell(&cells, x, y);
             row_cells.push(cell);
         }

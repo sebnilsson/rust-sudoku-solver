@@ -1,25 +1,38 @@
 use super::*;
 
-impl Default for Number {
-    fn default() -> Self {
-        Number::N0
-    }
-}
-
 impl Number {
     pub fn parse(value: &str) -> Self {
+        let parsed = value.parse::<u8>().unwrap_or_default();
+        Number::map(parsed)
+    }
+
+    pub fn map(value: u8) -> Self {
         match value {
-            "1" => Number::N1,
-            "2" => Number::N2,
-            "3" => Number::N3,
-            "4" => Number::N4,
-            "5" => Number::N5,
-            "6" => Number::N6,
-            "7" => Number::N7,
-            "8" => Number::N8,
-            "9" => Number::N9,
+            1 => Number::N1,
+            2 => Number::N2,
+            3 => Number::N3,
+            4 => Number::N4,
+            5 => Number::N5,
+            6 => Number::N6,
+            7 => Number::N7,
+            8 => Number::N8,
+            9 => Number::N9,
             _ => Number::default(),
         }
+    }
+
+    pub fn all() -> Vec<Self> {
+        vec![
+            Number::N1,
+            Number::N2,
+            Number::N3,
+            Number::N4,
+            Number::N5,
+            Number::N6,
+            Number::N7,
+            Number::N8,
+            Number::N9,
+        ]
     }
 }
 
@@ -46,5 +59,11 @@ impl Number {
         }
 
         format!("{}", usize)
+    }
+}
+
+impl Default for Number {
+    fn default() -> Self {
+        Number::N0
     }
 }

@@ -25,7 +25,7 @@ fn current_dir() -> String {
 }
 
 fn file_path() -> String {
-    let args: Vec<String> = std::env::args().collect();
+    let args: Vec<_> = std::env::args().collect();
 
-    args.get(1).unwrap_or(&String::new()).to_owned()
+    args.get(1).unwrap_or(&String::from("sudoku.txt")).to_owned()
 }

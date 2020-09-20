@@ -5,20 +5,12 @@ mod cell;
 mod number;
 mod region;
 
-pub fn solve<'a>(sudoku_content: String) -> Board {
-    let board = Board::parse(sudoku_content);
+pub const REGION_SIZE: u8 = 9;
 
-    let _last_total_potentials = -1;
+pub fn solve(sudoku_content: String, callback: fn(&Board)) -> Board {
+    let mut board = Board::parse(sudoku_content);
 
-    loop {
-        board.solve_run();
-
-        let total_potentials = board.total_potentials();
-
-        if total_potentials == 0 {
-            break;
-        }
-    }
+    board_solver::solve(&mut board, callback);
 
     board
 }
@@ -38,10 +30,10 @@ pub struct Cell {
     x: u8,
     y: u8,
     num: Number,
-    potentials: Vec<Number>,
+    options: Vec<Number>,
 }
 
-#[derive(Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Number {
     N0,
     N1,
