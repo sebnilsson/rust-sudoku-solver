@@ -1,17 +1,16 @@
-use super::Board;
-use super::Region;
+use super::*;
 
 pub fn solve(board: &mut Board, callback: fn(&Board)) {
-    let columns = board.columns();
-    let rows = board.rows();
-    let regions = board.regions();
+    let mut columns = board.columns();
+    let mut rows = board.rows();
+    let mut regions = board.regions();
 
     let mut last_unsolved_count = 0;
 
     loop {
-        solve_columns(&columns);
-        solve_rows(&rows);
-        solve_regions(&regions);
+        solve_columns(&mut columns);
+        solve_rows(&mut rows);
+        solve_regions(&mut regions);
 
         let unsolved_count = board.unsolved_count();
 
@@ -32,18 +31,26 @@ pub fn solve(board: &mut Board, callback: fn(&Board)) {
     }
 }
 
-fn solve_columns(columns: &Vec<Region>) {
+fn solve_columns(columns: &mut Vec<Region>) {
     solve_any_regions(columns);
 }
 
-fn solve_regions(regions: &Vec<Region>) {
+fn solve_regions(regions: &mut Vec<Region>) {
     solve_any_regions(regions);
 }
 
-fn solve_rows(rows: &Vec<Region>) {
+fn solve_rows(rows: &mut Vec<Region>) {
     solve_any_regions(rows);
 }
 
-fn solve_any_regions(_region: &Vec<Region>) {
-    // TODO
+fn solve_any_regions(regions: &mut Vec<Region>) {
+    for region in regions.iter_mut() {
+        for cell in region.cells.iter_mut() {
+            let cell = cell.borrow();
+            
+            if cell.num != Number::N0 {
+                println!("({}, {}): {}", cell.x, cell.y, cell.num);
+            }
+        }
+    }
 }

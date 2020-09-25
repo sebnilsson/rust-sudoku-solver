@@ -18,12 +18,12 @@ impl Board {
 }
 
 impl Board {
-    pub fn find_cell_mut(&mut self, x: u8, y: u8) -> &mut Cell {
+    pub fn find_cell_mut(&mut self, x: u8, y: u8) -> &mut BoardCell {
         find_cell_mut(&mut self.cells, x, y)
     }
 
     pub fn unsolved_count(&self) -> usize {
-        self.cells.iter().filter(|x| !x.is_solved()).count()
+        self.cells.iter().filter(|x| !x.borrow().is_solved()).count()
     }
 
     pub fn columns(&self) -> Vec<Region> {
@@ -48,7 +48,7 @@ impl std::fmt::Display for Board {
         let mut index = 0;
 
         for row in rows.iter() {
-            let nums = row.cells.iter().map(|x| x.num.to_str());
+            let nums = row.cells.iter().map(|x| x.borrow().num.to_str());
             let nums: Vec<_> = nums.collect();
 
             let r = nums.join(" ");
@@ -69,7 +69,7 @@ impl std::fmt::Display for Board {
     }
 }
 
-fn find_cell<'a>(cells: &'a Vec<Cell>, x: u8, y: u8) -> &'a Cell {
+fn find_cell<'a>(cells: &'a Vec<BoardCell>, x: u8, y: u8) -> &'a BoardCell {
     let index = index(x, y);
     let cell = cells.get(index);
     if cell.is_none() {
@@ -79,7 +79,7 @@ fn find_cell<'a>(cells: &'a Vec<Cell>, x: u8, y: u8) -> &'a Cell {
     cell.unwrap()
 }
 
-fn find_cell_mut<'a>(cells: &'a mut Vec<Cell>, x: u8, y: u8) -> &'a mut Cell {
+fn find_cell_mut<'a>(cells: &'a mut Vec<BoardCell>, x: u8, y: u8) -> &'a mut BoardCell {
     let index = index(x, y);
     let cell = cells.get_mut(index);
     if cell.is_none() {
@@ -95,12 +95,13 @@ fn new_board() -> Board {
     Board { cells }
 }
 
-fn cells<'a>() -> Vec<Cell> {
+fn cells<'a>() -> Vec<BoardCell> {
     let mut cells: Vec<_> = Vec::new();
 
     for x in 0..REGION_SIZE {
         for y in 0..REGION_SIZE {
             let cell = Cell::new(x, y);
+            let cell = BoardCell::new(cell);
             cells.push(cell);
         }
     }
@@ -108,7 +109,7 @@ fn cells<'a>() -> Vec<Cell> {
     cells
 }
 
-fn columns<'a>(cells: &'a Vec<Cell>) -> Vec<Region<'a>> {
+fn columns<'a>(cells: &'a Vec<BoardCell>) -> Vec<Region<'a>> {
     let mut columns: Vec<_> = Vec::new();
 
     for y in 0..REGION_SIZE {
@@ -130,11 +131,11 @@ fn index(x: u8, y: u8) -> usize {
     (x + (y * REGION_SIZE)) as usize
 }
 
-fn regions<'a>(cells: &'a Vec<Cell>) -> Vec<Region<'a>> {
+fn regions<'a>(cells: &'a Vec<BoardCell>) -> Vec<Region<'a>> {
     (0..REGION_SIZE as usize).map(|x| region(cells, x)).collect()
 }
 
-fn region<'a>(cells: &'a Vec<Cell>, region_index: usize) -> Region<'a> {
+fn region<'a>(cells: &'a Vec<BoardCell>, region_index: usize) -> Region<'a> {
     // TODO: Make algo much smarter
     let region_indexes = region_indexes(region_index);
 
@@ -167,14 +168,14 @@ fn region_indexes(
     (r1, r2, r3)
 }
 
-fn rows<'a>(cells: &'a Vec<Cell>) -> Vec<Region<'a>> {
+fn rows<'a>(cells: &'a Vec<BoardCell>) -> Vec<Region<'a>> {
     let mut rows: Vec<_> = Vec::new();
 
     for x in 0..REGION_SIZE {
         let mut row_cells: Vec<_> = Vec::new();
 
         for y in 0..REGION_SIZE {
-            let cell = find_cell(&cells, x, y);
+            let cell = find_cell(cells, x, y);
             row_cells.push(cell);
         }
 

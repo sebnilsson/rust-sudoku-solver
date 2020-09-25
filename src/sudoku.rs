@@ -1,3 +1,5 @@
+use std::cell::RefCell;
+
 mod board;
 mod board_parser;
 mod board_solver;
@@ -17,13 +19,15 @@ pub fn solve(sudoku_content: String, callback: fn(&Board)) -> Board {
 
 #[derive(Debug)]
 pub struct Board {
-    cells: Vec<Cell>,
+    cells: Vec<BoardCell>,
 }
 
 #[derive(Debug)]
 pub struct Region<'a> {
-    cells: Vec<&'a Cell>,
+    cells: Vec<&'a BoardCell>,
 }
+
+pub type BoardCell = RefCell<Cell>;
 
 #[derive(Debug)]
 pub struct Cell {
