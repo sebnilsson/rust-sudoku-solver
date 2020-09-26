@@ -14,7 +14,7 @@ impl Cell {
     }
 
     pub fn try_remove_option(&mut self, num: &Number) {
-        let index = self.options.iter().position(|x|x == num);
+        let index = self.options.iter().position(|x| x == num);
         if index.is_some() {
             self.options.remove(index.unwrap());
         }

@@ -46,15 +46,10 @@ fn solve_rows(rows: &mut Vec<Region>) {
 fn solve_any_regions(regions: &mut Vec<Region>) {
     for region in regions.iter_mut() {
         let solved_cells: Vec<&&BoardCell> =
-            region.cells.iter()
-            .filter(|x| x.borrow().is_solved())
-            .collect();
-            
-        let mut unsolved_cells: Vec<&&BoardCell> = region
-            .cells
-            .iter()
-            .filter(|x| !x.borrow().is_solved())
-            .collect();
+            region.cells.iter().filter(|x| x.borrow().is_solved()).collect();
+
+        let mut unsolved_cells: Vec<&&BoardCell> =
+            region.cells.iter().filter(|x| !x.borrow().is_solved()).collect();
 
         unsolved_cells.sort_by(|a, b| {
             a.borrow().options.len().cmp(&b.borrow().options.len())
