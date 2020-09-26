@@ -5,7 +5,7 @@ pub fn solve(board: &mut Board, callback: fn(&Board)) {
     let mut rows = board.rows();
     let mut regions = board.regions();
 
-    let mut last_unsolved_count = 0;
+    let mut last_unsolved_count = board.unsolved_count();
 
     loop {
         solve_columns(&mut columns);

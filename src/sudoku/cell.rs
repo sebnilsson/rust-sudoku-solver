@@ -13,6 +13,16 @@ impl Cell {
         self.num != Number::N0
     }
 
+    pub fn set(&mut self, value: &str) {
+        let num = Number::parse(value);
+        self.num = num;
+
+        if num != Number::N0 {
+            self.options.clear();
+            return;
+        }
+    }
+
     pub fn try_remove_option(&mut self, num: &Number) {
         let index = self.options.iter().position(|x| x == num);
         if index.is_some() {
@@ -22,16 +32,6 @@ impl Cell {
         if self.options.len() == 1 {
             let option = self.options.first().unwrap();
             self.num = Number::from_ref(option);
-        }
-    }
-
-    pub fn update(&mut self, value: &str) {
-        let num = Number::parse(value);
-        self.num = num;
-
-        if num != Number::N0 {
-            self.options.clear();
-            return;
         }
     }
 }
