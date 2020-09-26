@@ -79,7 +79,11 @@ fn find_cell<'a>(cells: &'a Vec<BoardCell>, x: u8, y: u8) -> &'a BoardCell {
     cell.unwrap()
 }
 
-fn find_cell_mut<'a>(cells: &'a mut Vec<BoardCell>, x: u8, y: u8) -> &'a mut BoardCell {
+fn find_cell_mut<'a>(
+    cells: &'a mut Vec<BoardCell>,
+    x: u8,
+    y: u8,
+) -> &'a mut BoardCell {
     let index = index(x, y);
     let cell = cells.get_mut(index);
     if cell.is_none() {

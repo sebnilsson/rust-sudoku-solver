@@ -22,7 +22,7 @@ fn main() {
 }
 
 fn board_callback(board: &Board) {
-    println!("-> Progress:");
+    println!("=== Progress ===");
     println!("{}", board);
     println!();
 }
@@ -37,11 +37,12 @@ fn sudoku_content() -> Option<String> {
     }
 
     println!("File found: {}", full_path);
+    println!();
 
     let file_content =
         fs::read_to_string(full_path).expect("Failed reading file");
 
-    println!("File content:");
+    println!("=== File content ===");
     println!("{}", file_content);
     println!();
 
