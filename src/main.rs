@@ -9,11 +9,6 @@ fn main() {
     println!();
 
     let sudoku_content = sudoku_content();
-    if sudoku_content.is_none() {
-        return;
-    }
-
-    let sudoku_content = sudoku_content.unwrap();
 
     let board = sudoku::solve(sudoku_content, board_callback);
 
@@ -27,13 +22,12 @@ fn board_callback(board: &Board) {
     println!();
 }
 
-fn sudoku_content() -> Option<String> {
+fn sudoku_content() -> String {
     let path = file_path::path();
     let full_path = path.to_str().expect("Failed parsing path");
 
     if !path.exists() || !path.is_file() {
-        println!("Failed finding file at {:?}", full_path);
-        return None;
+        panic!("Failed finding file at {:?}", full_path);
     }
 
     println!("File found: {}", full_path);
@@ -46,5 +40,5 @@ fn sudoku_content() -> Option<String> {
     println!("{}", file_content);
     println!();
 
-    Some(file_content)
+    file_content
 }
