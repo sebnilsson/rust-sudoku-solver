@@ -6,15 +6,21 @@ impl Cell {
 
         let options: Vec<_> = Number::all();
 
-        Self { x, y, options, num }
+        Self { x, y, options, num, template: false }
     }
 
     pub fn is_solved(&self) -> bool {
         self.num != Number::N0
     }
 
-    pub fn set(&mut self, value: &str) {
+    pub fn set_template(&mut self, value: &str) {
         let num = Number::parse(value);
+        self.update(num);
+
+        self.template = true;
+    }
+
+    pub fn update(&mut self, num: Number) {
         self.num = num;
 
         if num != Number::N0 {

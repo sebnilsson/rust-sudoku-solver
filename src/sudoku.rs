@@ -35,6 +35,7 @@ pub struct Cell {
     y: u8,
     num: Number,
     options: Vec<Number>,
+    template: bool,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]

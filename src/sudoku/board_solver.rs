@@ -1,4 +1,9 @@
+extern crate rand;
+
 use super::*;
+
+use rand::seq::SliceRandom;
+use rand::thread_rng;
 
 pub fn solve(board: &mut Board, callback: fn(&Board)) {
     let mut columns = board.columns();
@@ -12,22 +17,114 @@ pub fn solve(board: &mut Board, callback: fn(&Board)) {
         solve_rows(&mut rows);
         solve_regions(&mut regions);
 
-        let unsolved_count = board.unsolved_count();
+        let mut unsolved_count = board.unsolved_count();
 
         if unsolved_count == 0 {
             break;
         }
 
         if unsolved_count == last_unsolved_count {
-            panic!(
-                "Failed to improve unsolved cells. Stuck at: {}.",
-                unsolved_count
-            );
+            try_fill_empty_cells(&mut columns, &mut rows, &mut regions);
+
+            unsolved_count = board.unsolved_count();
+
+            if unsolved_count == last_unsolved_count {
+                panic!(
+                    "Failed to improve unsolved cells. Stuck at: {}.",
+                    unsolved_count
+                );
+            }
         }
 
         last_unsolved_count = unsolved_count;
 
         callback(&board);
+    }
+}
+
+fn try_fill_empty_cells(
+    columns: &mut Vec<Region>,
+    rows: &mut Vec<Region>,
+    regions: &mut Vec<Region>,
+) {
+    try_fill_empty_cells_region(columns);
+    clear_invalid_cells(columns, rows, regions);
+    try_fill_empty_cells_region(rows);
+    clear_invalid_cells(columns, rows, regions);
+    try_fill_empty_cells_region(regions);
+    clear_invalid_cells(columns, rows, regions);
+    recalc_options(columns);
+    recalc_options(rows);
+    recalc_options(regions);
+}
+
+fn recalc_options(regions: &mut Vec<Region>) {
+    for region in regions {
+        region.recalc_options();
+    }
+}
+
+fn try_fill_empty_cells_region(regions: &mut Vec<Region>) {
+    for region in regions {
+        let unsolved_cells: Vec<&&BoardCell> = region
+            .cells
+            .iter()
+            .filter(|x| x.borrow().num == Number::N0)
+            .collect();
+        let resolved_numbers: Vec<Number> = region
+            .cells
+            .iter()
+            .filter(|x| x.borrow().num != Number::N0)
+            .map(|x| x.borrow().num)
+            .collect();
+        let mut unused_numbers: Vec<Number> = Number::all()
+            .clone()
+            .into_iter()
+            .filter(|x| !resolved_numbers.contains(x))
+            .collect();
+        unused_numbers.shuffle(&mut thread_rng());
+
+        for x in 0..unsolved_cells.len() {
+            let cell = unsolved_cells.get(x).unwrap();
+            let mut cell = cell.borrow_mut();
+
+            let num = unused_numbers.get(x);
+            if num.is_some() {
+                let num = Number::from_ref(num.unwrap());
+                cell.update(num);
+            }
+        }
+    }
+}
+
+fn clear_invalid_cells(
+    columns: &mut Vec<Region>,
+    rows: &mut Vec<Region>,
+    regions: &mut Vec<Region>,
+) {
+    clear_invalid_cells_region(columns);
+    clear_invalid_cells_region(rows);
+    clear_invalid_cells_region(regions);
+}
+
+fn clear_invalid_cells_region(regions: &mut Vec<Region>) {
+    for region in regions {
+        for cell in region.cells.iter() {
+            if cell.borrow().num == Number::N0 {
+                continue;
+            }
+
+            let duplicates: Vec<&&BoardCell> = region
+                .cells
+                .iter()
+                .filter(|x| x.borrow().num == cell.borrow().num)
+                .collect();
+            if duplicates.len() >= 2 {
+                for duplicate in duplicates {
+                    duplicate.borrow_mut().update(Number::N0);
+                }
+            }
+        }
     }
 }
 
@@ -55,7 +152,7 @@ fn solve_any_regions(regions: &mut Vec<Region>) {
             a.borrow().options.len().cmp(&b.borrow().options.len())
         });
 
-        for cell in unsolved_cells.iter() {
+        for cell in unsolved_cells.into_iter() {
             remove_solved_cells(cell, &solved_cells);
             try_solve_cell(&mut cell.borrow_mut());
         }

@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+
 use super::*;
 
 impl Number {
@@ -86,5 +88,11 @@ impl Default for Number {
 impl std::fmt::Display for Number {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.to_usize())
+    }
+}
+
+impl PartialOrd for Number {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.to_usize().cmp(&other.to_usize()))
     }
 }

@@ -13,4 +13,31 @@ impl<'a> Region<'a> {
         }
         region
     }
+
+    pub fn recalc_options(&mut self) {
+        let unsolved_cells: Vec<&&BoardCell> = self
+            .cells
+            .iter()
+            .filter(|x| x.borrow().num != Number::N0)
+            .collect();
+        for cell in unsolved_cells.iter() {
+            cell.borrow_mut().options = Number::all();
+        }
+
+        for num in Number::all() {
+            let num_exists = self.cells.iter().any(|x| x.borrow().num == num);
+            if !num_exists {
+                continue;
+            }
+
+            for cell in unsolved_cells.iter() {
+                let index =
+                    cell.borrow().options.iter().position(|x| x == &num);
+
+                if index.is_some() {
+                    cell.borrow_mut().options.remove(index.unwrap());
+                }
+            }
+        }
+    }
 }
