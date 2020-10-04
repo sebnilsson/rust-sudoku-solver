@@ -1,5 +1,5 @@
 mod board;
-mod board_indexer;
+mod board_builder;
 mod board_parser;
 mod board_solver;
 mod cell;
@@ -33,13 +33,6 @@ pub struct Cell {
     num: Number,
     options: Vec<Number>,
     template: bool,
-}
-
-#[derive(Debug)]
-pub struct CellInfo<'a> {
-    column: Region<'a>,
-    row: Region<'a>,
-    region: Region<'a>,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]

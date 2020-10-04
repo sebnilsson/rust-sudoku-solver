@@ -6,6 +6,15 @@ impl<'a> Region<'a> {
         Self { cells }
     }
 
+    // pub fn copy(region: &Self) -> Self {
+    //     let cells = region.cells;
+
+    //     let region = Region::new();
+    //     region.cells = cells;
+
+    //     region
+    // }
+
     // pub fn from(cells: Vec<&'a Cell>) -> Self {
     //     let mut region = Region::new();
     //     for x in cells {

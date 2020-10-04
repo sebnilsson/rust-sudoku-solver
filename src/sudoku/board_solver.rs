@@ -36,15 +36,15 @@ pub fn solve(board: &mut Board, callback: fn(&Board)) {
 fn solve_board(board: &mut Board) {
     // let cells = &board.cells;
 
-    // for cell in board.cells.iter_mut() {
-    //     solve_cell(cell, cells);
-    // }
+    for cell in board.cells.iter_mut() {
+        solve_cell(cell);
+    }
 }
 
 //fn solve_cells()
 
-fn solve_cell(cell: &mut Cell, cells: &Vec<Cell>) {
-    let cell_info = board_indexer::get(cells, cell);
+fn solve_cell(cell: &mut Cell) {
+    //let cell_info = board_builder::get(cells, cell);
 }
 
 // fn try_fill_empty_cells(
