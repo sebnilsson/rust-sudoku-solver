@@ -7,6 +7,7 @@ pub fn solve(board: &mut Board, callback: fn(&Board)) {
 
     loop {
         solve_board(board);
+        //solve_cell(cell, board);
 
         let /*mut*/ unsolved_count = board.unsolved_count();
 
@@ -34,16 +35,20 @@ pub fn solve(board: &mut Board, callback: fn(&Board)) {
 }
 
 fn solve_board(board: &mut Board) {
-    // let cells = &board.cells;
+    let cells: Vec<&mut Cell> = board.cells.iter_mut().collect();
 
-    for cell in board.cells.iter_mut() {
-        solve_cell(cell);
-    }
+    solve_cells(cells);
 }
 
-//fn solve_cells()
+fn solve_cells(cells: Vec<&mut Cell>) {
+    // let cell_list: Vec<&Cell> = cells.iter().map(|x|&*x).collect();
+    // let c = *&cells;
+    // for cell in cells {
+    //     solve_cell(cell, cells);
+    // }
+}
 
-fn solve_cell(cell: &mut Cell) {
+fn solve_cell(cell: &mut Cell, cells: Vec<&Cell>) {
     //let cell_info = board_builder::get(cells, cell);
 }
 

@@ -9,7 +9,7 @@ const LINE_ENDING: &'static str = "\n";
 
 impl Board {
     pub fn parse(sudoku_content: String) -> Self {
-        let mut board = board_builder::create();
+        let mut board = create_board();
         board_parser::fill(&mut board, sudoku_content);
 
         board
@@ -42,15 +42,15 @@ impl Board {
     }
 
     pub fn columns<'a>(&'a self) -> Vec<Region<'a>> {
-        board_builder::columns(&self.cells)
+        cell_resolver::columns(&self.cells)
     }
 
     pub fn regions<'a>(&'a self) -> Vec<Region<'a>> {
-        board_builder::regions(&self.cells)
+        cell_resolver::regions(&self.cells)
     }
 
     pub fn rows<'a>(&'a self) -> Vec<Region<'a>> {
-        board_builder::rows(&self.cells)
+        cell_resolver::rows(&self.cells)
     }
 }
 
@@ -82,6 +82,18 @@ impl std::fmt::Display for Board {
 
         write!(f, "{}", s)
     }
+}
+
+fn create_board() -> Board {
+    let mut cells: Vec<Cell> = Vec::new();
+    for x in 0..BOARD_WIDTH {
+        for y in 0..BOARD_WIDTH {
+            let cell = Cell::new(x, y);
+            cells.push(cell);
+        }
+    }
+
+    Board { cells }
 }
 
 fn find_cell_mut(cells: &mut Vec<Cell>, x: u8, y: u8) -> &mut Cell {

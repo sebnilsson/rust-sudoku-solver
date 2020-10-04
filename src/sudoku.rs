@@ -1,8 +1,8 @@
 mod board;
-mod board_builder;
 mod board_parser;
 mod board_solver;
 mod cell;
+mod cell_resolver;
 mod number;
 mod region;
 
