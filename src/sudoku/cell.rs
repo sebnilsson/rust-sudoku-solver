@@ -29,7 +29,7 @@ impl Cell {
         }
     }
 
-    pub fn update_options(&mut self, region_numbers: Vec<Number>) {
+    pub fn update_options(&mut self, region_numbers: &Vec<Number>) {
         let options: Vec<Number> = Number::all()
             .drain(..)
             .filter(|x| !region_numbers.contains(x))

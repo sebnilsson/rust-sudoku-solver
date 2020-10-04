@@ -46,32 +46,49 @@ impl<'a> Region<'a> {
     //     //self.cells = new_cells;
     // }
 
-    // pub fn recalc_options(&mut self) {
-    //     let mut unsolved_cells: Vec<&Cell> =
-    //         self.cells.drain(..).filter(|x| x.num != Number::N0).collect();
+    pub fn recalc_options(&mut self) {
+        let solved_cells: Vec<&BoardCell> = self
+            .cells
+            .drain(..)
+            .filter(|x| x.borrow().num != Number::N0)
+            .collect();
+        let unsolved_cells: Vec<&BoardCell> = self
+            .cells
+            .drain(..)
+            .filter(|x| x.borrow().num == Number::N0)
+            .collect();
 
-    //     for x in self.cells.drain(..) {
-    //         x.reset_options();
-    //     }
+        let mut solved_nums: Vec<Number> =
+            solved_cells.iter().map(|x| x.borrow().num).collect();
+        solved_nums.sort();
+        solved_nums.dedup();
 
-    //     for cell in unsolved_cells.iter_mut() {
-    //         cell.reset_options();
-    //     }
+        for cell in unsolved_cells {
+            cell.borrow_mut().update_options(&solved_nums);
+        }
 
-    //     for num in Number::all() {
-    //         let num_exists = self.cells.iter().any(|x| x.num == num);
-    //         if !num_exists {
-    //             continue;
-    //         }
+        // for x in self.cells.drain(..) {
+        //     x.reset_options();
+        // }
 
-    //         for cell in unsolved_cells.iter() {
-    //             let index = cell.options.iter().position(|x| x == &num);
+        // for cell in unsolved_cells.iter_mut() {
+        //     cell.reset_options();
+        // }
 
-    //             if index.is_some() {
-    //                 // TODO: Fix
-    //                 //cell.options.remove(index.unwrap());
-    //             }
-    //         }
-    //     }
-    // }
+        // for num in Number::all() {
+        //     let num_exists = self.cells.iter().any(|x| x.num == num);
+        //     if !num_exists {
+        //         continue;
+        //     }
+
+        //     for cell in unsolved_cells.iter() {
+        //         let index = cell.options.iter().position(|x| x == &num);
+
+        //         if index.is_some() {
+        //             // TODO: Fix
+        //             //cell.options.remove(index.unwrap());
+        //         }
+        //     }
+        // }
+    }
 }
