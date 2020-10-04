@@ -1,10 +1,12 @@
+use std::cell::RefCell;
+
 mod board;
 mod board_parser;
 mod board_solver;
 mod cell;
-mod cell_resolver;
 mod number;
 mod region;
+mod region_resolver;
 
 pub const BOARD_WIDTH: u8 = 9;
 
@@ -18,13 +20,15 @@ pub fn solve(sudoku_content: String, callback: fn(&Board)) -> Board {
 
 #[derive(Debug)]
 pub struct Board {
-    cells: Vec<Cell>,
+    cells: Vec<BoardCell>,
 }
 
 #[derive(Debug)]
 pub struct Region<'a> {
-    cells: Vec<&'a Cell>,
+    cells: Vec<&'a BoardCell>,
 }
+
+type BoardCell = RefCell<Cell>;
 
 #[derive(Debug)]
 pub struct Cell {
@@ -35,7 +39,7 @@ pub struct Cell {
     template: bool,
 }
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq, Ord, Eq)]
 pub enum Number {
     N0,
     N1,

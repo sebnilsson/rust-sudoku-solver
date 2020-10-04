@@ -21,36 +21,36 @@ impl Board {
 }
 
 impl Board {
-    pub fn find_cell_mut(&mut self, x: u8, y: u8) -> &mut Cell {
+    pub fn find_cell_mut(&mut self, x: u8, y: u8) -> &mut BoardCell {
         find_cell_mut(&mut self.cells, x, y)
     }
 
     pub fn unsolved_count(&self) -> usize {
-        self.cells.iter().filter(|x| !x.is_solved()).count()
+        self.cells.iter().map(|x| x.borrow()).filter(|x| !x.is_solved()).count()
     }
 
-    pub fn find_column<'a>(&'a self, cell: &Cell) -> Region<'a> {
-        find_region(self.columns(), cell)
+    pub fn find_column<'a>(&'a self, x: u8, y: u8) -> Region<'a> {
+        find_region(self.columns(), x, y)
     }
 
-    pub fn find_region<'a>(&'a self, cell: &Cell) -> Region<'a> {
-        find_region(self.regions(), cell)
+    pub fn find_region<'a>(&'a self, x: u8, y: u8) -> Region<'a> {
+        find_region(self.regions(), x, y)
     }
 
-    pub fn find_row<'a>(&'a self, cell: &Cell) -> Region<'a> {
-        find_region(self.rows(), cell)
+    pub fn find_row<'a>(&'a self, x: u8, y: u8) -> Region<'a> {
+        find_region(self.rows(), x, y)
     }
 
     pub fn columns<'a>(&'a self) -> Vec<Region<'a>> {
-        cell_resolver::columns(&self.cells)
+        region_resolver::columns(&self.cells)
     }
 
     pub fn regions<'a>(&'a self) -> Vec<Region<'a>> {
-        cell_resolver::regions(&self.cells)
+        region_resolver::regions(&self.cells)
     }
 
     pub fn rows<'a>(&'a self) -> Vec<Region<'a>> {
-        cell_resolver::rows(&self.cells)
+        region_resolver::rows(&self.cells)
     }
 }
 
@@ -63,7 +63,8 @@ impl std::fmt::Display for Board {
         let mut index = 0;
 
         for row in rows.iter() {
-            let nums = row.cells.iter().map(|x| x.num.to_str());
+            let nums =
+                row.cells.iter().map(|x| x.borrow()).map(|x| x.num.to_str());
             let nums: Vec<_> = nums.collect();
 
             let r = nums.join(" ");
@@ -85,10 +86,11 @@ impl std::fmt::Display for Board {
 }
 
 fn create_board() -> Board {
-    let mut cells: Vec<Cell> = Vec::new();
+    let mut cells = Vec::new();
     for x in 0..BOARD_WIDTH {
         for y in 0..BOARD_WIDTH {
             let cell = Cell::new(x, y);
+            let cell = BoardCell::new(cell);
             cells.push(cell);
         }
     }
@@ -96,7 +98,7 @@ fn create_board() -> Board {
     Board { cells }
 }
 
-fn find_cell_mut(cells: &mut Vec<Cell>, x: u8, y: u8) -> &mut Cell {
+fn find_cell_mut(cells: &mut Vec<BoardCell>, x: u8, y: u8) -> &mut BoardCell {
     let index = Board::index(x, y);
     let cell = cells.get_mut(index);
     if cell.is_none() {
@@ -106,9 +108,13 @@ fn find_cell_mut(cells: &mut Vec<Cell>, x: u8, y: u8) -> &mut Cell {
     cell.unwrap()
 }
 
-fn find_region<'a>(regions: Vec<Region<'a>>, cell: &Cell) -> Region<'a> {
+fn find_region<'a>(regions: Vec<Region<'a>>, x: u8, y: u8) -> Region<'a> {
     let region = regions.into_iter().find(|region| {
-        region.cells.iter().any(|x| x.x == cell.x && x.y == cell.y)
+        region
+            .cells
+            .iter()
+            .map(|x| x.borrow())
+            .any(|cell| cell.x == x && cell.y == y)
     });
 
     match region {

@@ -1,6 +1,6 @@
 use super::*;
 
-pub fn columns<'a>(cells: &'a Vec<Cell>) -> Vec<Region<'a>> {
+pub fn columns<'a>(cells: &'a Vec<BoardCell>) -> Vec<Region<'a>> {
     let mut rows = Vec::new();
 
     for x in 0..BOARD_WIDTH {
@@ -22,8 +22,8 @@ pub fn columns<'a>(cells: &'a Vec<Cell>) -> Vec<Region<'a>> {
     rows
 }
 
-pub fn regions<'a>(cells: &'a Vec<Cell>) -> Vec<Region<'a>> {
-    let mut map: Vec<(&Cell, usize)> =
+pub fn regions<'a>(cells: &'a Vec<BoardCell>) -> Vec<Region<'a>> {
+    let mut map: Vec<(&BoardCell, usize)> =
         cells.iter().map(|x| (x, region_index(x))).collect();
     map.sort_by_key(|x| x.1);
 
@@ -34,7 +34,7 @@ pub fn regions<'a>(cells: &'a Vec<Cell>) -> Vec<Region<'a>> {
     for index in indexes {
         let mut region = Region::new();
 
-        let cells: Vec<&Cell> =
+        let cells: Vec<&BoardCell> =
             map.iter().filter(|x| x.1 == index).map(|x| x.0).collect();
 
         for cell in cells {
@@ -46,7 +46,7 @@ pub fn regions<'a>(cells: &'a Vec<Cell>) -> Vec<Region<'a>> {
     regions
 }
 
-pub fn rows<'a>(cells: &'a Vec<Cell>) -> Vec<Region<'a>> {
+pub fn rows<'a>(cells: &'a Vec<BoardCell>) -> Vec<Region<'a>> {
     let mut rows = Vec::new();
 
     for y in 0..BOARD_WIDTH {
@@ -68,7 +68,8 @@ pub fn rows<'a>(cells: &'a Vec<Cell>) -> Vec<Region<'a>> {
     rows
 }
 
-fn region_index(cell: &Cell) -> usize {
+fn region_index(cell: &BoardCell) -> usize {
+    let cell = cell.borrow();
     let x = cell.x;
     let y = cell.y;
 

@@ -17,6 +17,7 @@ fn main() {
 
     println!("Solved:");
     println!("{}", board);
+    println!();
 }
 
 fn board_callback(board: &Board) {

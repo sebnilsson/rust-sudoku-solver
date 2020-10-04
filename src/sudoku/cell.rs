@@ -30,19 +30,16 @@ impl Cell {
     }
 
     pub fn update_options(&mut self, region_numbers: Vec<Number>) {
-        let options = Number::all()
+        let options: Vec<Number> = Number::all()
             .drain(..)
             .filter(|x| !region_numbers.contains(x))
             .collect();
 
-        self.options = options;
-    }
-
-    pub fn try_remove_option(&mut self, num: &Number) {
-        let index = self.options.iter().position(|x| x == num);
-        if index.is_some() {
-            self.options.remove(index.unwrap());
+        if options.len() < 1 {
+            return;
         }
+
+        self.options = options;
 
         if self.options.len() == 1 {
             let option = self.options.first().unwrap();

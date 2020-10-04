@@ -12,7 +12,7 @@ pub fn fill(board: &mut Board, sudoku_content: String) {
 
             let number = *numbers.get(y).unwrap_or_else(|| &"");
 
-            cell.set_template(number);
+            cell.borrow_mut().set_template(number);
         }
     }
 }
