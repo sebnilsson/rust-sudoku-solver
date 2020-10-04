@@ -1,13 +1,12 @@
-use std::cell::RefCell;
-
 mod board;
+mod board_indexer;
 mod board_parser;
 mod board_solver;
 mod cell;
 mod number;
 mod region;
 
-pub const REGION_SIZE: u8 = 9;
+pub const BOARD_WIDTH: u8 = 9;
 
 pub fn solve(sudoku_content: String, callback: fn(&Board)) -> Board {
     let mut board = Board::parse(sudoku_content);
@@ -19,15 +18,13 @@ pub fn solve(sudoku_content: String, callback: fn(&Board)) -> Board {
 
 #[derive(Debug)]
 pub struct Board {
-    cells: Vec<BoardCell>,
+    cells: Vec<Cell>,
 }
 
 #[derive(Debug)]
 pub struct Region<'a> {
-    cells: Vec<&'a BoardCell>,
+    cells: Vec<&'a Cell>,
 }
-
-pub type BoardCell = RefCell<Cell>;
 
 #[derive(Debug)]
 pub struct Cell {
@@ -36,6 +33,13 @@ pub struct Cell {
     num: Number,
     options: Vec<Number>,
     template: bool,
+}
+
+#[derive(Debug)]
+pub struct CellInfo<'a> {
+    column: Region<'a>,
+    row: Region<'a>,
+    region: Region<'a>,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]

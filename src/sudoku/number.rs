@@ -23,20 +23,20 @@ impl Number {
         }
     }
 
-    pub fn from_ref(value: &Self) -> Self {
-        match value {
-            Number::N0 => Number::N0,
-            Number::N1 => Number::N1,
-            Number::N2 => Number::N2,
-            Number::N3 => Number::N3,
-            Number::N4 => Number::N4,
-            Number::N5 => Number::N5,
-            Number::N6 => Number::N6,
-            Number::N7 => Number::N7,
-            Number::N8 => Number::N8,
-            Number::N9 => Number::N9,
-        }
-    }
+    // pub fn copy(value: &Self) -> Self {
+    //     match value {
+    //         Number::N0 => Number::N0,
+    //         Number::N1 => Number::N1,
+    //         Number::N2 => Number::N2,
+    //         Number::N3 => Number::N3,
+    //         Number::N4 => Number::N4,
+    //         Number::N5 => Number::N5,
+    //         Number::N6 => Number::N6,
+    //         Number::N7 => Number::N7,
+    //         Number::N8 => Number::N8,
+    //         Number::N9 => Number::N9,
+    //     }
+    // }
 
     pub fn all() -> Vec<Self> {
         vec![

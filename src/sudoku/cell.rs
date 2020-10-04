@@ -6,7 +6,7 @@ impl Cell {
 
         let options: Vec<_> = Number::all();
 
-        Self { x, y, options, num, template: false }
+        Self { x, y, num, options, template: false }
     }
 
     pub fn is_solved(&self) -> bool {
@@ -29,6 +29,15 @@ impl Cell {
         }
     }
 
+    pub fn update_options(&mut self, region_numbers: Vec<Number>) {
+        let options = Number::all()
+            .drain(..)
+            .filter(|x| !region_numbers.contains(x))
+            .collect();
+
+        self.options = options;
+    }
+
     pub fn try_remove_option(&mut self, num: &Number) {
         let index = self.options.iter().position(|x| x == num);
         if index.is_some() {
@@ -37,7 +46,7 @@ impl Cell {
 
         if self.options.len() == 1 {
             let option = self.options.first().unwrap();
-            self.num = Number::from_ref(option);
+            self.num = option.to_owned();
         }
     }
 }
