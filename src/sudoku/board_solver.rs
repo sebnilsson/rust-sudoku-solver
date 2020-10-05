@@ -144,7 +144,7 @@ fn fill_region(unsolved_cells: &Vec<&BoardCell>, regions: &mut Vec<Region>) {
             let index = index.unwrap();
             let num = unused_numbers.remove(index);
 
-            cell.update(num);
+            cell.update(&num);
         }
     }
 
@@ -205,7 +205,7 @@ fn clear_duplicates_region(
 
                     if is_unsolved_cell {
                         let mut duplicate = duplicate.borrow_mut();
-                        duplicate.update(Number::N0);
+                        duplicate.update(&Number::N0);
                     }
                 }
             }

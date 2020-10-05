@@ -19,21 +19,21 @@ impl Cell {
 
     pub fn set_template(&mut self, value: &str) {
         let num = Number::parse(value);
-        self.update(num);
+        self.update(&num);
 
         if num != Number::N0 {
             self.template = true;
         }
     }
 
-    pub fn update(&mut self, num: Number) {
+    pub fn update(&mut self, num: &Number) {
         if self.template {
             return;
         }
 
-        self.num = num;
+        self.num = num.clone();
 
-        if num != Number::N0 {
+        if num != &Number::N0 {
             self.options.clear();
             return;
         }
