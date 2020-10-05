@@ -9,6 +9,10 @@ impl Cell {
         Self { x, y, num, options, template: false }
     }
 
+    pub fn index(&self) -> usize {
+        Board::index(self.x, self.y)
+    }
+
     pub fn is_solved(&self) -> bool {
         self.num != Number::N0
     }
@@ -17,10 +21,16 @@ impl Cell {
         let num = Number::parse(value);
         self.update(num);
 
-        self.template = true;
+        if num != Number::N0 {
+            self.template = true;
+        }
     }
 
     pub fn update(&mut self, num: Number) {
+        if self.template {
+            return;
+        }
+
         self.num = num;
 
         if num != Number::N0 {

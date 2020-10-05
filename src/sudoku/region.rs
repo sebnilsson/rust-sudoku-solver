@@ -7,14 +7,14 @@ impl<'a> Region<'a> {
     }
 
     pub fn recalc_options(&mut self) {
-        let solved_cells: Vec<&BoardCell> = self
+        let solved_cells: Vec<_> = self
             .cells
-            .drain(..)
+            .iter()
             .filter(|x| x.borrow().num != Number::N0)
             .collect();
-        let unsolved_cells: Vec<&BoardCell> = self
+        let unsolved_cells: Vec<_> = self
             .cells
-            .drain(..)
+            .iter()
             .filter(|x| x.borrow().num == Number::N0)
             .collect();
 

@@ -9,12 +9,12 @@ pub fn solve(board: &mut Board, callback: fn(&Board)) {
     let mut last_unsolved_count = board.unsolved_count();
 
     loop {
-        // TODO: Consider removing
         solve_board(board);
 
         let mut unsolved_count = board.unsolved_count();
 
         if unsolved_count == 0 {
+            validate_solution(board);
             break;
         }
 
@@ -22,6 +22,11 @@ pub fn solve(board: &mut Board, callback: fn(&Board)) {
             fill_empty_cells(board);
 
             unsolved_count = board.unsolved_count();
+
+            if unsolved_count == 0 {
+                validate_solution(board);
+                break;
+            }
 
             if unsolved_count == last_unsolved_count {
                 panic!(
@@ -31,12 +36,16 @@ pub fn solve(board: &mut Board, callback: fn(&Board)) {
             }
         }
 
-        last_unsolved_count = unsolved_count;
-
         if unsolved_count > 0 {
             callback(&board);
         }
+
+        last_unsolved_count = unsolved_count;
     }
+}
+
+fn validate_solution(_board: &Board) {
+    // TODO: Implement
 }
 
 fn solve_board(board: &mut Board) {
@@ -76,26 +85,42 @@ fn fill_empty_cells(board: &mut Board) {
     let mut rows = board.rows();
     let mut regions = board.regions();
 
-    fill_region(&mut columns);
-    clear_duplicates(&columns, &rows, &regions);
-    fill_region(&mut rows);
-    clear_duplicates(&columns, &rows, &regions);
-    fill_region(&mut regions);
-    clear_duplicates(&columns, &rows, &regions);
+    let mut unsolved_cells: Vec<&BoardCell> =
+        board.cells.iter().filter(|x| x.borrow().num == Number::N0).collect();
+    unsolved_cells.sort_by_key(|x| x.borrow().options.len());
+
+    fill_region(&unsolved_cells, &mut columns);
+    fill_region(&unsolved_cells, &mut rows);
+    fill_region(&unsolved_cells, &mut regions);
+
+    // println!("=== fill_region ===");
+    // println!("{}", board);
+    // println!();
+
+    clear_duplicates(&unsolved_cells, &mut columns, &mut rows, &mut regions);
+
+    // println!("=== clear_duplicates ===");
+    // println!("{}", board);
+    // println!();
 }
 
-fn fill_region(regions: &mut Vec<Region>) {
+fn fill_region(unsolved_cells: &Vec<&BoardCell>, regions: &mut Vec<Region>) {
     for region in regions.iter_mut() {
-        let unsolved_cells: Vec<_> = region
-            .cells
-            .iter()
-            .filter(|x| x.borrow().num == Number::N0)
-            .collect();
         let solved_numbers: Vec<_> = region
             .cells
             .iter()
             .filter(|x| x.borrow().num != Number::N0)
             .map(|x| x.borrow().num)
+            .collect();
+
+        let unsolved_region_cells: Vec<&&BoardCell> = region
+            .cells
+            .iter()
+            .filter(|x| {
+                unsolved_cells
+                    .iter()
+                    .any(|u| u.borrow().index() == x.borrow().index())
+            })
             .collect();
 
         let mut unused_numbers: Vec<Number> = Number::all()
@@ -105,34 +130,60 @@ fn fill_region(regions: &mut Vec<Region>) {
             .collect();
         unused_numbers.shuffle(&mut thread_rng());
 
-        for x in 0..unsolved_cells.len() {
-            let cell = unsolved_cells.get(x).unwrap();
+        for x in 0..unsolved_region_cells.len() {
+            let cell = unsolved_region_cells.get(x).unwrap();
             let mut cell = cell.borrow_mut();
 
-            let num = unused_numbers.get(x);
-            if num.is_some() {
-                let num = num.unwrap().to_owned();
-                cell.update(num);
+            let index = unused_numbers
+                .iter()
+                .position(|x| cell.options.iter().any(|c| c == x));
+            if index.is_none() {
+                continue;
             }
-        }
 
-        if unsolved_cells.len() > 0 {
-            &region.recalc_options();
+            let index = index.unwrap();
+            let num = unused_numbers.remove(index);
+
+            cell.update(num);
         }
     }
+
+    recalc_options(regions);
 }
 
 fn clear_duplicates(
-    columns: &Vec<Region>,
-    rows: &Vec<Region>,
-    regions: &Vec<Region>,
+    unsolved_cells: &Vec<&BoardCell>,
+    columns: &mut Vec<Region>,
+    rows: &mut Vec<Region>,
+    regions: &mut Vec<Region>,
 ) {
-    clear_duplicates_region(columns);
-    clear_duplicates_region(rows);
-    clear_duplicates_region(regions);
+    clear_duplicates_region(unsolved_cells, columns);
+    clear_duplicates_region(unsolved_cells, rows);
+    clear_duplicates_region(unsolved_cells, regions);
+
+    recalc_options_all(columns, rows, regions);
 }
 
-fn clear_duplicates_region(regions: &Vec<Region>) {
+fn recalc_options_all(
+    columns: &mut Vec<Region>,
+    rows: &mut Vec<Region>,
+    regions: &mut Vec<Region>,
+) {
+    recalc_options(columns);
+    recalc_options(rows);
+    recalc_options(regions);
+}
+
+fn recalc_options(regions: &mut Vec<Region>) {
+    for region in regions.iter_mut() {
+        region.recalc_options();
+    }
+}
+
+fn clear_duplicates_region(
+    unsolved_cells: &Vec<&BoardCell>,
+    regions: &Vec<Region>,
+) {
     for region in regions {
         let filled_cells: Vec<_> = region
             .cells
@@ -148,7 +199,14 @@ fn clear_duplicates_region(regions: &Vec<Region>) {
 
             if duplicates.len() >= 2 {
                 for duplicate in duplicates {
-                    duplicate.borrow_mut().update(Number::N0);
+                    let is_unsolved_cell = unsolved_cells.iter().any(|x| {
+                        x.borrow().index() == duplicate.borrow().index()
+                    });
+
+                    if is_unsolved_cell {
+                        let mut duplicate = duplicate.borrow_mut();
+                        duplicate.update(Number::N0);
+                    }
                 }
             }
         }
