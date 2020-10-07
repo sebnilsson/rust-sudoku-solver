@@ -12,40 +12,40 @@ pub fn solve(
 ) {
     let mut last_unsolved_count = board.unsolved_count();
 
-    // loop {
-    //     solve_board(board);
+    loop {
+        solve_board(board);
 
-    //     let mut unsolved_count = board.unsolved_count();
+        let mut unsolved_count = board.unsolved_count();
 
-    //     if unsolved_count == 0 {
-    //         validate_solution(board, complete_callback);
-    //         break;
-    //     }
+        if unsolved_count == 0 {
+            validate_solution(board, complete_callback);
+            break;
+        }
 
-    //     if unsolved_count == last_unsolved_count {
-    //         fill_empty_cells(board);
+        if unsolved_count == last_unsolved_count {
+            fill_empty_cells(board);
 
-    //         unsolved_count = board.unsolved_count();
+            unsolved_count = board.unsolved_count();
 
-    //         if unsolved_count == 0 {
-    //             validate_solution(board, complete_callback);
-    //             break;
-    //         }
+            if unsolved_count == 0 {
+                validate_solution(board, complete_callback);
+                break;
+            }
 
-    //         if unsolved_count == last_unsolved_count {
-    //             panic!(
-    //                 "Failed to improve unsolved cells. Stuck at: {}.",
-    //                 unsolved_count
-    //             );
-    //         }
-    //     }
+            if unsolved_count == last_unsolved_count {
+                panic!(
+                    "Failed to improve unsolved cells. Stuck at: {}.",
+                    unsolved_count
+                );
+            }
+        }
 
-    //     if unsolved_count > 0 {
-    //         callback(board);
-    //     }
+        if unsolved_count > 0 {
+            callback(board);
+        }
 
-    //     last_unsolved_count = unsolved_count;
-    // }
+        last_unsolved_count = unsolved_count;
+    }
 }
 
 fn validate_solution(board: &Board, complete_callback: fn(&Board)) {
@@ -54,29 +54,30 @@ fn validate_solution(board: &Board, complete_callback: fn(&Board)) {
     complete_callback(board);
 }
 
-// fn solve_board(board: &mut Board) {
-//     let unsolved_cells = unsolved_cells(board);
+fn solve_board(board: &mut Board) {
+    let board_info = BoardInfo::new(board);
+    let unsolved_cells = unsolved_cells(board);
 
-//     for cell in unsolved_cells {
-//         let region_numbers = region_numbers(&cell, board);
+    for cell in unsolved_cells {
+        let region_numbers = region_numbers(&cell, &board_info);
 
-//         cell.borrow_mut().update_options(&region_numbers);
-//     }
-// }
+        cell.borrow_mut().update_options(&region_numbers);
+    }
+}
 
-/*fn region_numbers(cell: &BoardCell, board: &Board) -> Vec<Number> {
+fn region_numbers(cell: &BoardCell, board_info: &BoardInfo) -> Vec<Number> {
     let cell = cell.borrow();
     let x = cell.x;
     let y = cell.y;
 
-    let row = board.find_row(x, y);
-    let column = board.find_column(x, y);
-    let region = board.find_region(x, y);
+    let row = board_info.find_row(x, y);
+    let column = board_info.find_column(x, y);
+    let region = board_info.find_region(x, y);
 
-    let mut cells: Vec<&BoardCell> = row
+    let mut cells: Vec<&&BoardCell> = row
         .cells
-        .into_iter()
-        .chain(column.cells.into_iter().chain(region.cells.into_iter()))
+        .iter()
+        .chain(column.cells.iter().chain(region.cells.iter()))
         .filter(|x| x.borrow().num != Number::N0)
         .collect();
 
@@ -87,9 +88,11 @@ fn validate_solution(board: &Board, complete_callback: fn(&Board)) {
 }
 
 fn fill_empty_cells(board: &mut Board) {
-    let mut columns = board.columns_mut();
-    let mut rows = board.rows;
-    let mut regions = board.regions;
+    let board_info = BoardInfo::new(board);
+
+    let mut columns = board_info.columns;
+    let mut rows = board_info.rows;
+    let mut regions = board_info.regions;
 
     let mut unsolved_cells: Vec<&BoardCell> =
         board.cells.iter().filter(|x| x.borrow().num == Number::N0).collect();
@@ -221,4 +224,3 @@ fn clear_duplicates_region(
 fn unsolved_cells(board: &Board) -> Vec<&BoardCell> {
     board.cells.iter().filter(|x| !x.borrow().is_solved()).collect()
 }
-*/

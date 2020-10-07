@@ -14,7 +14,9 @@ impl Board {
 
         board
     }
+}
 
+impl Board {
     pub fn index(x: u8, y: u8) -> usize {
         (x + (y * BOARD_WIDTH)) as usize
     }
@@ -24,6 +26,7 @@ impl Board {
     pub fn find_cell_mut(&mut self, x: u8, y: u8) -> &mut BoardCell {
         find_cell_mut(&mut self.cells, x, y)
     }
+
     pub fn find_cell(&self, x: u8, y: u8) -> &BoardCell {
         find_cell(&self.cells, x, y)
     }
