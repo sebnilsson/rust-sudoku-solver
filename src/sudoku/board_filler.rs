@@ -66,9 +66,13 @@ fn fill_region(board_info: &BoardInfo, regions: &Vec<Region>) {
                     let index = index.unwrap();
                     num = unused_numbers.remove(index);
                 } else {
-                    match unused_numbers.pop () {
-                        Some(n) => { num = n; },
-                        None => { continue; }
+                    match unused_numbers.pop() {
+                        Some(n) => {
+                            num = n;
+                        }
+                        None => {
+                            continue;
+                        }
                     }
                 }
             }
