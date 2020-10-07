@@ -29,7 +29,11 @@ impl<'a> BoardInfo<'a> {
             }
         }
 
-        BoardInfo { columns, rows, regions }
+        BoardInfo { board, columns, rows, regions }
+    }
+
+    pub fn other_nums(&self, x: u8, y: u8) -> Vec<Number> {
+        other_nums(self, x, y)
     }
 
     pub fn find_column(&self, x: u8, y: u8) -> &Region {
@@ -53,6 +57,36 @@ fn create_regions<'a>() -> Vec<Region<'a>> {
     }
 
     regions
+}
+
+fn find_region<'a>(regions: &'a Vec<Region>, x: u8, y: u8) -> &'a Region<'a> {
+    let region = regions.into_iter().find(|region| {
+        region
+            .cells
+            .iter()
+            .map(|x| x.borrow())
+            .any(|cell| cell.x == x && cell.y == y)
+    });
+
+    match region {
+        Some(region) => region,
+        None => panic!("Failed to find correct region"),
+    }
+}
+
+fn other_nums(board_info: &BoardInfo, x: u8, y: u8) -> Vec<Number> {
+    let column = board_info.find_column(x, y);
+    let row = board_info.find_row(x, y);
+    let region = board_info.find_region(x, y);
+
+    let region_cells =
+        column.cells.iter().chain(row.cells.iter().chain(region.cells.iter()));
+
+    let mut region_cell_nums: Vec<Number> =
+        region_cells.map(|x| x.borrow().num).collect();
+    region_cell_nums.sort();
+    region_cell_nums.dedup();
+    region_cell_nums
 }
 
 fn region_index(cell: &BoardCell) -> usize {
@@ -84,20 +118,5 @@ fn region_index(cell: &BoardCell) -> usize {
         } else {
             8
         }
-    }
-}
-
-fn find_region<'a>(regions: &'a Vec<Region>, x: u8, y: u8) -> &'a Region<'a> {
-    let region = regions.into_iter().find(|region| {
-        region
-            .cells
-            .iter()
-            .map(|x| x.borrow())
-            .any(|cell| cell.x == x && cell.y == y)
-    });
-
-    match region {
-        Some(region) => region,
-        None => panic!("Failed to find correct region"),
     }
 }

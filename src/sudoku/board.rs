@@ -31,6 +31,10 @@ impl Board {
         find_cell(&self.cells, x, y)
     }
 
+    pub fn update_options(&mut self) {
+        board_update_options(self);
+    }
+
     pub fn unsolved_count(&self) -> usize {
         self.cells.iter().map(|x| x.borrow()).filter(|x| !x.is_solved()).count()
     }
@@ -94,4 +98,23 @@ fn find_cell_mut(cells: &mut Vec<BoardCell>, x: u8, y: u8) -> &mut BoardCell {
     let cell = cells.get_mut(index);
 
     cell.expect(format!("Failed finding cell for x: {}, y: {}", x, y).as_str())
+}
+
+fn board_update_options(board: &mut Board) {
+    let board_info = BoardInfo::new(board);
+
+    for cell in board.cells.iter() {
+        let x;
+        let y;
+        {
+            let cell = cell.borrow_mut();
+            x = cell.x;
+            y = cell.y;
+        }
+
+        let other_nums = board_info.other_nums(x, y);
+
+        let mut cell = cell.borrow_mut();
+        cell.update_options(other_nums);
+    }
 }

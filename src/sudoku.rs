@@ -1,6 +1,7 @@
 use std::cell::RefCell;
 
 mod board;
+mod board_filler;
 mod board_info;
 mod board_parser;
 mod board_solver;
@@ -27,6 +28,7 @@ pub struct Board {
 
 #[derive(Debug)]
 pub struct BoardInfo<'a> {
+    board: &'a Board,
     columns: Vec<Region<'a>>,
     rows: Vec<Region<'a>>,
     regions: Vec<Region<'a>>,
@@ -46,7 +48,6 @@ pub struct Cell {
     num: Number,
     options: Vec<Number>,
     template: bool,
-    guess: bool,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Ord, Eq)]

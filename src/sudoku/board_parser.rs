@@ -15,4 +15,6 @@ pub fn fill(board: &mut Board, sudoku_content: String) {
             cell.borrow_mut().set_num_template(number);
         }
     }
+
+    board.update_options();
 }
