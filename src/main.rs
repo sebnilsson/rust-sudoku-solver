@@ -10,15 +10,17 @@ fn main() {
 
     let sudoku_content = sudoku_content();
 
-    let board = sudoku::solve(sudoku_content, board_callback);
-
-    println!("Solved:");
-    println!("{}", board);
-    println!();
+    sudoku::solve(sudoku_content, board_callback, board_complete_callback);
 }
 
 fn board_callback(board: &Board) {
     println!("=== Progress ===");
+    println!("{}", board);
+    println!();
+}
+
+fn board_complete_callback(board: &Board) {
+    println!("Solved!");
     println!("{}", board);
     println!();
 }

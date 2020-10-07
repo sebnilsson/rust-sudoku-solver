@@ -1,26 +1,35 @@
 use std::cell::RefCell;
 
 mod board;
+mod board_info;
 mod board_parser;
 mod board_solver;
 mod cell;
 mod number;
 mod region;
-mod region_resolver;
 
 pub const BOARD_WIDTH: u8 = 9;
 
-pub fn solve(sudoku_content: String, callback: fn(&Board)) -> Board {
+pub fn solve(
+    sudoku_content: String,
+    callback: fn(&Board),
+    complete_callback: fn(&Board),
+) {
     let mut board = Board::parse(sudoku_content);
 
-    board_solver::solve(&mut board, callback);
-
-    board
+    board_solver::solve(&mut board, callback, complete_callback);
 }
 
 #[derive(Debug)]
 pub struct Board {
     cells: Vec<BoardCell>,
+}
+
+#[derive(Debug)]
+pub struct BoardInfo<'a> {
+    columns: Vec<Region<'a>>,
+    rows: Vec<Region<'a>>,
+    regions: Vec<Region<'a>>,
 }
 
 #[derive(Debug)]
