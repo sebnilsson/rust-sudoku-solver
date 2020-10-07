@@ -46,6 +46,7 @@ pub struct Cell {
     num: Number,
     options: Vec<Number>,
     template: bool,
+    guess: bool,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Ord, Eq)]

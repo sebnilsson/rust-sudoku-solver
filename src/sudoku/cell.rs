@@ -6,7 +6,7 @@ impl Cell {
 
         let options: Vec<_> = Number::all();
 
-        Self { x, y, num, options, template: false }
+        Self { x, y, num, options, template: false, guess: false }
     }
 
     pub fn index(&self) -> usize {
@@ -17,25 +17,30 @@ impl Cell {
         self.num != Number::N0
     }
 
-    pub fn set_template(&mut self, value: &str) {
+    pub fn reset_guess(&mut self) {
+        self.set_num(&Number::N0);
+
+        self.guess = false;
+    }
+
+    pub fn set_num_guess(&mut self, num: &Number) {
+        self.set_num(num);
+
+        self.guess = true;
+    }
+
+    pub fn set_num_solution(&mut self, num: &Number) {
+        self.set_num(num);
+
+        self.guess = false;
+    }
+
+    pub fn set_num_template(&mut self, value: &str) {
         let num = Number::parse(value);
-        self.update(&num);
+        self.set_num(&num);
 
         if num != Number::N0 {
             self.template = true;
-        }
-    }
-
-    pub fn update(&mut self, num: &Number) {
-        if self.template {
-            return;
-        }
-
-        self.num = num.clone();
-
-        if num != &Number::N0 {
-            self.options.clear();
-            return;
         }
     }
 
@@ -52,8 +57,22 @@ impl Cell {
         self.options = options;
 
         if self.options.len() == 1 {
-            let option = self.options.first().unwrap();
-            self.num = option.to_owned();
+            let option = self.options.first().unwrap().to_owned();
+            
+            self.set_num_solution(&option);
+        }
+    }
+
+    fn set_num(&mut self, num: &Number) {
+        if self.template {
+            return;
+        }
+
+        self.num = num.clone();
+
+        if num != &Number::N0 {
+            self.options.clear();
+            return;
         }
     }
 }
