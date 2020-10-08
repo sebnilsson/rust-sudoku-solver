@@ -45,3 +45,5 @@ fn sudoku_content() -> String {
 
     file_content
 }
+
+// https://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html

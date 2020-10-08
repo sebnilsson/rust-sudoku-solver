@@ -53,7 +53,7 @@ impl std::fmt::Display for Board {
             let nums = row.cells.iter().map(|x| x.borrow()).map(|x| {
                 let s = x.num.to_str();
                 if x.template {
-                    format!("\x1b[32m{}\x1b[0m", s)
+                    format!("\x1b[42;1m{}\x1b[0m", s)
                 } else {
                     s
                 }

@@ -8,9 +8,9 @@ use rand::thread_rng;
 pub fn fill(board: &mut Board) {
     let mut board_info = BoardInfo::new(board);
 
-    fill_region(&board_info, &board_info.columns);
+    //fill_region(&board_info, &board_info.columns);
     fill_region(&board_info, &board_info.rows);
-    fill_region(&board_info, &board_info.regions);
+    //fill_region(&board_info, &board_info.regions);
 
     println!("||| fill_region |||");
     println!("{}", board);
