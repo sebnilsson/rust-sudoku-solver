@@ -36,7 +36,7 @@ fn fill_region(board_info: &BoardInfo, regions: &Vec<Region>) {
 
         let mut unsolved_cells: Vec<&&BoardCell> =
             region.cells.iter().filter(|x| !x.borrow().is_solved()).collect();
-        unsolved_cells.sort_by_key(|x| x.borrow().options.len());
+        unsolved_cells.sort_by_key(|x| x.borrow().potentials.len());
 
         let mut unused_numbers: Vec<Number> = Number::all()
             .clone()
@@ -56,7 +56,7 @@ fn fill_region(board_info: &BoardInfo, regions: &Vec<Region>) {
 
                 let index = unused_numbers
                     .iter()
-                    .position(|x| cell.options.iter().any(|c| c == x));
+                    .position(|x| cell.potentials.iter().any(|c| c == x));
 
                 // num = match index {
                 //     Some(index) => unused_numbers.remove(index),
@@ -90,7 +90,7 @@ fn fill_region(board_info: &BoardInfo, regions: &Vec<Region>) {
 fn clear_duplicates(board_info: &mut BoardInfo) {
     clear_duplicates_region(&board_info.columns);
     clear_duplicates_region(&board_info.rows);
-    clear_duplicates_region(&board_info.regions);
+    clear_duplicates_region(&board_info.subgrids);
 }
 
 fn clear_duplicates_region(regions: &Vec<Region>) {

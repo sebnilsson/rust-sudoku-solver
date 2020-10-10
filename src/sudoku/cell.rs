@@ -4,9 +4,9 @@ impl Cell {
     pub fn new(x: u8, y: u8) -> Self {
         let num = Number::default();
 
-        let options: Vec<_> = Number::all();
+        let potentials: Vec<_> = Number::all();
 
-        Self { x, y, num, options, template: false }
+        Self { x, y, num, potentials, template: false }
     }
 }
 
@@ -36,29 +36,27 @@ impl Cell {
         self.num = num.clone();
 
         if num != &Number::N0 {
-            self.options.clear();
+            self.potentials.clear();
             return;
         }
     }
 
     pub fn update_options(&mut self, other_nums: Vec<Number>) {
-        //let update_options = get_update_options(self, board_info);
-
-        let options: Vec<Number> = Number::all()
+        let potentials: Vec<Number> = Number::all()
             .drain(..)
             .filter(|x| !other_nums.contains(x))
             .collect();
 
-        if options.len() < 1 {
+        if potentials.len() < 1 {
             return;
         }
 
-        self.options = options;
+        self.potentials = potentials;
 
-        if self.options.len() == 1 {
-            let option = self.options.first().unwrap().to_owned();
+        if self.potentials.len() == 1 {
+            let potential = self.potentials.first().unwrap().to_owned();
 
-            self.set_num(&option);
+            self.set_num(&potential);
         }
     }
 }

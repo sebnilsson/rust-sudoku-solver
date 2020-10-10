@@ -31,7 +31,7 @@ pub struct BoardInfo<'a> {
     board: &'a Board,
     columns: Vec<Region<'a>>,
     rows: Vec<Region<'a>>,
-    regions: Vec<Region<'a>>,
+    subgrids: Vec<Region<'a>>,
 }
 
 #[derive(Debug)]
@@ -46,7 +46,7 @@ pub struct Cell {
     x: u8,
     y: u8,
     num: Number,
-    options: Vec<Number>,
+    potentials: Vec<Number>,
     template: bool,
 }
 

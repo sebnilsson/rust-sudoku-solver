@@ -4,7 +4,7 @@ impl<'a> BoardInfo<'a> {
     pub fn new(board: &'a Board) -> BoardInfo {
         let mut columns = create_regions();
         let mut rows = create_regions();
-        let mut regions = create_regions();
+        let mut subgrids = create_regions();
 
         for x in 0..BOARD_WIDTH {
             for y in 0..BOARD_WIDTH {
@@ -19,17 +19,17 @@ impl<'a> BoardInfo<'a> {
                     .expect("Failed to find column by index");
 
                 let region_index = region_index(cell);
-                let region = regions
+                let subgrid = subgrids
                     .get_mut(region_index)
                     .expect("Failed to find region by index");
 
                 row.cells.push(cell);
                 column.cells.push(cell);
-                region.cells.push(cell);
+                subgrid.cells.push(cell);
             }
         }
 
-        BoardInfo { board, columns, rows, regions }
+        BoardInfo { board, columns, rows, subgrids }
     }
 
     pub fn other_nums(&self, x: u8, y: u8) -> Vec<Number> {
@@ -41,7 +41,7 @@ impl<'a> BoardInfo<'a> {
     }
 
     pub fn find_region(&self, x: u8, y: u8) -> &Region {
-        find_region(&self.regions, x, y)
+        find_region(&self.subgrids, x, y)
     }
 
     pub fn find_row(&self, x: u8, y: u8) -> &Region {
