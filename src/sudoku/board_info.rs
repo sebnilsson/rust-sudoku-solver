@@ -32,20 +32,20 @@ impl<'a> BoardInfo<'a> {
         BoardInfo { board, columns, rows, subgrids }
     }
 
-    pub fn other_nums(&self, x: u8, y: u8) -> Vec<Number> {
-        other_nums(self, x, y)
+    pub fn region_nums(&self, x: u8, y: u8) -> Vec<Number> {
+        region_nums(self, x, y)
     }
 
     pub fn find_column(&self, x: u8, y: u8) -> &Region {
         find_region(&self.columns, x, y)
     }
 
-    pub fn find_region(&self, x: u8, y: u8) -> &Region {
-        find_region(&self.subgrids, x, y)
-    }
-
     pub fn find_row(&self, x: u8, y: u8) -> &Region {
         find_region(&self.rows, x, y)
+    }
+
+    pub fn find_subgrid(&self, x: u8, y: u8) -> &Region {
+        find_region(&self.subgrids, x, y)
     }
 }
 
@@ -74,13 +74,13 @@ fn find_region<'a>(regions: &'a Vec<Region>, x: u8, y: u8) -> &'a Region<'a> {
     }
 }
 
-fn other_nums(board_info: &BoardInfo, x: u8, y: u8) -> Vec<Number> {
+fn region_nums(board_info: &BoardInfo, x: u8, y: u8) -> Vec<Number> {
     let column = board_info.find_column(x, y);
     let row = board_info.find_row(x, y);
-    let region = board_info.find_region(x, y);
+    let subgrid = board_info.find_subgrid(x, y);
 
     let region_cells =
-        column.cells.iter().chain(row.cells.iter().chain(region.cells.iter()));
+        column.cells.iter().chain(row.cells.iter().chain(subgrid.cells.iter()));
 
     let mut region_cell_nums: Vec<Number> =
         region_cells.map(|x| x.borrow().num).collect();

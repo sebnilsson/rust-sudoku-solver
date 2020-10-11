@@ -41,10 +41,10 @@ impl Cell {
         }
     }
 
-    pub fn update_options(&mut self, other_nums: Vec<Number>) {
+    pub fn update_options(&mut self, region_nums: Vec<Number>) {
         let potentials: Vec<Number> = Number::all()
             .drain(..)
-            .filter(|x| !other_nums.contains(x))
+            .filter(|x| !region_nums.contains(x))
             .collect();
 
         if potentials.len() < 1 {

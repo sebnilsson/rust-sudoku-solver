@@ -1,7 +1,6 @@
 use std::cell::RefCell;
 
 mod board;
-mod board_filler;
 mod board_info;
 mod board_parser;
 mod board_solver;

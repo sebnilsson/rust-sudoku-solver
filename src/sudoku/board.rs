@@ -118,9 +118,9 @@ fn board_update_options(board: &mut Board) {
             y = cell.y;
         }
 
-        let other_nums = board_info.other_nums(x, y);
+        let region_nums = board_info.region_nums(x, y);
 
         let mut cell = cell.borrow_mut();
-        cell.update_options(other_nums);
+        cell.update_options(region_nums);
     }
 }
