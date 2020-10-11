@@ -3,6 +3,7 @@ mod sudoku;
 
 use std::fs;
 use sudoku::Board;
+use sudoku::SolveContext;
 
 fn main() {
     println!("Solving Sudoku...");
@@ -10,7 +11,12 @@ fn main() {
 
     let sudoku_content = sudoku_content();
 
-    sudoku::solve(sudoku_content, board_callback, board_complete_callback);
+    let context = SolveContext {
+        callback: board_callback,
+        complete_callback: board_complete_callback,
+    };
+
+    sudoku::solve(sudoku_content, &context);
 }
 
 fn board_callback(board: &Board) {

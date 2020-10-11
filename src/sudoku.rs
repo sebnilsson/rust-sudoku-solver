@@ -10,14 +10,15 @@ mod region;
 
 pub const BOARD_WIDTH: u8 = 9;
 
-pub fn solve(
-    sudoku_content: String,
-    callback: fn(&Board),
-    complete_callback: fn(&Board),
-) {
+pub fn solve(sudoku_content: String, context: &SolveContext) {
     let mut board = Board::parse(sudoku_content);
 
-    board_solver::solve(&mut board, callback, complete_callback);
+    board_solver::solve(&mut board, context);
+}
+
+pub struct SolveContext {
+    pub callback: fn(&Board),
+    pub complete_callback: fn(&Board),
 }
 
 #[derive(Debug)]

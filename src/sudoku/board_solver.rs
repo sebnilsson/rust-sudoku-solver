@@ -5,14 +5,10 @@ use super::*;
 use rand::seq::SliceRandom;
 use rand::thread_rng;
 
-pub fn solve(
-    board: &mut Board,
-    callback: fn(&Board),
-    complete_callback: fn(&Board),
-) {
+pub fn solve(board: &mut Board, context: &SolveContext) {
     let board_info = BoardInfo::new(board);
 
-    let board_solved = solve_board(&board_info, callback);
+    let board_solved = solve_board(&board_info, context);
 
     if !board_solved {
         let unsolved_count = board.unsolved_count();
@@ -22,10 +18,10 @@ pub fn solve(
         );
     }
 
-    complete_callback(board);
+    (context.complete_callback)(&board);
 }
 
-fn solve_board<'a>(board_info: &'a BoardInfo, callback: fn(&Board)) -> bool {
+fn solve_board<'a>(board_info: &'a BoardInfo, context: &SolveContext) -> bool {
     let unsolved_cell =
         board_info.board.cells.iter().find(|x| !x.borrow().is_solved());
 
@@ -38,13 +34,12 @@ fn solve_board<'a>(board_info: &'a BoardInfo, callback: fn(&Board)) -> bool {
     let mut nums = Number::all().clone();
     nums.shuffle(&mut thread_rng());
 
-
     for num in nums {
         if is_valid_num(unsolved_cell, &num, board_info) {
             unsolved_cell.borrow_mut().set_num(&num);
 
-            if solve_board(board_info, callback) {
-                callback(board_info.board);
+            if solve_board(board_info, context) {
+                (context.callback)(board_info.board);
                 return true;
             }
 
@@ -52,7 +47,7 @@ fn solve_board<'a>(board_info: &'a BoardInfo, callback: fn(&Board)) -> bool {
         }
     }
 
-    callback(board_info.board);
+    (context.callback)(board_info.board);
 
     return false;
 }
