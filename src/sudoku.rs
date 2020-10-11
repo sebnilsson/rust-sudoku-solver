@@ -5,6 +5,7 @@ mod board_info;
 mod board_parser;
 mod board_solver;
 mod cell;
+mod coordinate;
 mod number;
 mod region;
 
@@ -43,11 +44,16 @@ type BoardCell = RefCell<Cell>;
 
 #[derive(Debug)]
 pub struct Cell {
-    x: u8,
-    y: u8,
+    coordinate: Coordinate,
     num: Number,
     potentials: Vec<Number>,
     template: bool,
+}
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub struct Coordinate {
+    x: u8,
+    y: u8,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq, Ord, Eq)]

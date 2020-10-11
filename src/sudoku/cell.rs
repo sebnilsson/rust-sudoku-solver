@@ -1,12 +1,12 @@
 use super::*;
 
 impl Cell {
-    pub fn new(x: u8, y: u8) -> Self {
+    pub fn new(coordinate: Coordinate) -> Self {
         let num = Number::default();
 
         let potentials: Vec<_> = Number::all();
 
-        Self { x, y, num, potentials, template: false }
+        Self { coordinate, num, potentials, template: false }
     }
 }
 

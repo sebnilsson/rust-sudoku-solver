@@ -8,7 +8,8 @@ impl<'a> BoardInfo<'a> {
 
         for x in 0..BOARD_WIDTH {
             for y in 0..BOARD_WIDTH {
-                let cell = board.find_cell(x, y);
+                let coordinate = Coordinate::new(x, y);
+                let cell = board.find_cell(coordinate);
 
                 let row = rows
                     .get_mut(x as usize)
@@ -32,20 +33,20 @@ impl<'a> BoardInfo<'a> {
         BoardInfo { board, columns, rows, subgrids }
     }
 
-    pub fn region_nums(&self, x: u8, y: u8) -> Vec<Number> {
-        region_nums(self, x, y)
+    pub fn region_nums(&self, coordinate: Coordinate) -> Vec<Number> {
+        region_nums(self, coordinate)
     }
 
-    pub fn find_column(&self, x: u8, y: u8) -> &Region {
-        find_region(&self.columns, x, y)
+    pub fn find_column(&self, coordinate: Coordinate) -> &Region {
+        find_region(&self.columns, coordinate)
     }
 
-    pub fn find_row(&self, x: u8, y: u8) -> &Region {
-        find_region(&self.rows, x, y)
+    pub fn find_row(&self, coordinate: Coordinate) -> &Region {
+        find_region(&self.rows, coordinate)
     }
 
-    pub fn find_subgrid(&self, x: u8, y: u8) -> &Region {
-        find_region(&self.subgrids, x, y)
+    pub fn find_subgrid(&self, coordinate: Coordinate) -> &Region {
+        find_region(&self.subgrids, coordinate)
     }
 }
 
@@ -59,13 +60,16 @@ fn create_regions<'a>() -> Vec<Region<'a>> {
     regions
 }
 
-fn find_region<'a>(regions: &'a Vec<Region>, x: u8, y: u8) -> &'a Region<'a> {
+fn find_region<'a>(
+    regions: &'a Vec<Region>,
+    coordinate: Coordinate,
+) -> &'a Region<'a> {
     let region = regions.into_iter().find(|region| {
         region
             .cells
             .iter()
             .map(|x| x.borrow())
-            .any(|cell| cell.x == x && cell.y == y)
+            .any(|cell| cell.coordinate == coordinate)
     });
 
     match region {
@@ -74,10 +78,10 @@ fn find_region<'a>(regions: &'a Vec<Region>, x: u8, y: u8) -> &'a Region<'a> {
     }
 }
 
-fn region_nums(board_info: &BoardInfo, x: u8, y: u8) -> Vec<Number> {
-    let column = board_info.find_column(x, y);
-    let row = board_info.find_row(x, y);
-    let subgrid = board_info.find_subgrid(x, y);
+fn region_nums(board_info: &BoardInfo, coordinate: Coordinate) -> Vec<Number> {
+    let column = board_info.find_column(coordinate);
+    let row = board_info.find_row(coordinate);
+    let subgrid = board_info.find_subgrid(coordinate);
 
     let region_cells =
         column.cells.iter().chain(row.cells.iter().chain(subgrid.cells.iter()));
@@ -91,8 +95,9 @@ fn region_nums(board_info: &BoardInfo, x: u8, y: u8) -> Vec<Number> {
 
 fn region_index(cell: &BoardCell) -> usize {
     let cell = cell.borrow();
-    let x = cell.x;
-    let y = cell.y;
+    let coordinate = cell.coordinate;
+    let x = coordinate.x;
+    let y = coordinate.y;
 
     if x < 3 {
         if y < 3 {

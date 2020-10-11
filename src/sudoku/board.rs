@@ -17,18 +17,18 @@ impl Board {
 }
 
 impl Board {
-    pub fn index(x: u8, y: u8) -> usize {
-        (x + (y * BOARD_WIDTH)) as usize
+    pub fn index(coordinate: Coordinate) -> usize {
+        (coordinate.x + (coordinate.y * BOARD_WIDTH)) as usize
     }
 }
 
 impl Board {
-    pub fn find_cell_mut(&mut self, x: u8, y: u8) -> &mut BoardCell {
-        find_cell_mut(&mut self.cells, x, y)
+    pub fn find_cell_mut(&mut self, coordinate: Coordinate) -> &mut BoardCell {
+        find_cell_mut(&mut self.cells, coordinate)
     }
 
-    pub fn find_cell(&self, x: u8, y: u8) -> &BoardCell {
-        find_cell(&self.cells, x, y)
+    pub fn find_cell(&self, coordinate: Coordinate) -> &BoardCell {
+        find_cell(&self.cells, coordinate)
     }
 
     pub fn update_options(&mut self) {
@@ -83,7 +83,8 @@ fn create_board() -> Board {
 
     for x in 0..BOARD_WIDTH {
         for y in 0..BOARD_WIDTH {
-            let cell = Cell::new(x, y);
+            let coordinate = Coordinate::new(x as u8, y as u8);
+            let cell = Cell::new(coordinate);
             let ref_cell = BoardCell::new(cell);
             cells.push(ref_cell);
         }
@@ -92,33 +93,34 @@ fn create_board() -> Board {
     Board { cells }
 }
 
-fn find_cell(cells: &Vec<BoardCell>, x: u8, y: u8) -> &BoardCell {
-    let index = Board::index(x, y);
+fn find_cell(cells: &Vec<BoardCell>, coordinate: Coordinate) -> &BoardCell {
+    let index = Board::index(coordinate);
     let cell = cells.get(index);
 
-    cell.expect(format!("Failed finding cell for x: {}, y: {}", x, y).as_str())
+    cell.expect(format!("Failed finding cell: {}", coordinate).as_str())
 }
 
-fn find_cell_mut(cells: &mut Vec<BoardCell>, x: u8, y: u8) -> &mut BoardCell {
-    let index = Board::index(x, y);
+fn find_cell_mut(
+    cells: &mut Vec<BoardCell>,
+    coordinate: Coordinate,
+) -> &mut BoardCell {
+    let index = Board::index(coordinate);
     let cell = cells.get_mut(index);
 
-    cell.expect(format!("Failed finding cell for x: {}, y: {}", x, y).as_str())
+    cell.expect(format!("Failed finding cell: {}", coordinate).as_str())
 }
 
 fn board_update_options(board: &mut Board) {
     let board_info = BoardInfo::new(board);
 
     for cell in board.cells.iter() {
-        let x;
-        let y;
+        let coordinate;
         {
             let cell = cell.borrow_mut();
-            x = cell.x;
-            y = cell.y;
+            coordinate = Coordinate::new(cell.coordinate.x, cell.coordinate.y);
         }
 
-        let region_nums = board_info.region_nums(x, y);
+        let region_nums = board_info.region_nums(coordinate);
 
         let mut cell = cell.borrow_mut();
         cell.update_options(region_nums);
