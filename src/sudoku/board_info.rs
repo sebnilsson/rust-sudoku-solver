@@ -33,8 +33,8 @@ impl<'a> BoardInfo<'a> {
         BoardInfo { board, columns, rows, subgrids }
     }
 
-    pub fn region_nums(&self, coordinate: Coordinate) -> Vec<Number> {
-        region_nums(self, coordinate)
+    pub fn cell_potentials(&self, cell: &BoardCell) -> Vec<Number> {
+        cell_potentials(self, cell)
     }
 
     pub fn find_column(&self, coordinate: Coordinate) -> &Region {
@@ -48,6 +48,33 @@ impl<'a> BoardInfo<'a> {
     pub fn find_subgrid(&self, coordinate: Coordinate) -> &Region {
         find_region(&self.subgrids, coordinate)
     }
+
+    pub fn nums(&self) -> Vec<Number> {
+        self.board.cells.iter().map(|x| x.borrow().num.clone()).collect()
+    }
+
+    pub fn region_nums(&self, coordinate: Coordinate) -> Vec<Number> {
+        region_nums(self, coordinate)
+    }
+
+    pub fn update_cell_potentials(&self, cell: &BoardCell) {
+        update_cell_potentials(self, cell);
+    }
+
+    pub fn update_potentials(&mut self) {
+        board_potentials(self);
+    }
+}
+
+fn cell_potentials(board_info: &BoardInfo, cell: &BoardCell) -> Vec<Number> {
+    let region_nums = region_nums(board_info, cell.borrow().coordinate);
+
+    Number::all()
+        .clone()
+        .iter()
+        .filter(|x| !region_nums.contains(x))
+        .map(|x| x.clone())
+        .collect()
 }
 
 fn create_regions<'a>() -> Vec<Region<'a>> {
@@ -123,5 +150,24 @@ fn region_index(cell: &BoardCell) -> usize {
         } else {
             8
         }
+    }
+}
+
+fn update_cell_potentials(board_info: &BoardInfo, cell: &BoardCell) {
+    let coordinate;
+    {
+        let cell = cell.borrow_mut();
+        coordinate = Coordinate::new(cell.coordinate.x, cell.coordinate.y);
+    }
+
+    let region_nums = board_info.region_nums(coordinate);
+
+    let mut cell = cell.borrow_mut();
+    cell.update_potentials(region_nums);
+}
+
+fn board_potentials(board_info: &mut BoardInfo) {
+    for cell in board_info.board.cells.iter() {
+        update_cell_potentials(board_info, cell);
     }
 }

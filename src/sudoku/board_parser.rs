@@ -17,5 +17,7 @@ pub fn fill(board: &mut Board, sudoku_content: String) {
         }
     }
 
-    board.update_options();
+    let mut board_info = BoardInfo::new(&board);
+
+    board_info.update_potentials();
 }

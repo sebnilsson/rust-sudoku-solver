@@ -50,7 +50,7 @@ pub struct Cell {
     template: bool,
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+#[derive(Copy, Clone, Debug, Ord, Eq)]
 pub struct Coordinate {
     x: u8,
     y: u8,

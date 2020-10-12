@@ -41,7 +41,7 @@ impl Cell {
         }
     }
 
-    pub fn update_options(&mut self, region_nums: Vec<Number>) {
+    pub fn update_potentials(&mut self, region_nums: Vec<Number>) {
         let potentials: Vec<Number> = Number::all()
             .drain(..)
             .filter(|x| !region_nums.contains(x))
@@ -58,5 +58,11 @@ impl Cell {
 
             self.set_num(&potential);
         }
+    }
+}
+
+impl PartialEq for Cell {
+    fn eq(&self, other: &Self) -> bool {
+        self.coordinate == other.coordinate
     }
 }
