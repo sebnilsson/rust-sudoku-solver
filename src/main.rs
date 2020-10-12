@@ -20,7 +20,9 @@ fn main() {
 }
 
 fn board_callback(board: &Board) {
-    println!("=== Progress ===");
+    let unsolved_count = board.unsolved_count();
+
+    println!("=== Progress (Unsolved: {}) ===", unsolved_count);
     println!("{}", board);
     println!();
 }

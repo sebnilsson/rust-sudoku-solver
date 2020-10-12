@@ -77,8 +77,8 @@ impl std::fmt::Display for Board {
 fn create_board() -> Board {
     let mut cells = Vec::new();
 
-    for x in 0..BOARD_WIDTH {
-        for y in 0..BOARD_WIDTH {
+    for y in 0..BOARD_WIDTH {
+        for x in 0..BOARD_WIDTH {
             let coordinate = Coordinate::new(x as u8, y as u8);
             let cell = Cell::new(coordinate);
             let ref_cell = BoardCell::new(cell);

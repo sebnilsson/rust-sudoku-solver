@@ -5,7 +5,7 @@ use super::*;
 
 impl Coordinate {
     pub fn new(x: u8, y: u8) -> Self {
-        Coordinate { x, y }
+        Coordinate { x: x.clone(), y: y.clone() }
     }
 }
 

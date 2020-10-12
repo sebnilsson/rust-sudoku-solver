@@ -6,8 +6,8 @@ impl<'a> BoardInfo<'a> {
         let mut rows = Region::for_board();
         let mut subgrids = Region::for_board();
 
-        for x in 0..BOARD_WIDTH {
-            for y in 0..BOARD_WIDTH {
+        for y in 0..BOARD_WIDTH {
+            for x in 0..BOARD_WIDTH {
                 let coordinate = Coordinate::new(x, y);
                 let cell = board.find_cell(coordinate);
 
@@ -19,9 +19,9 @@ impl<'a> BoardInfo<'a> {
                     .get_mut(y as usize)
                     .expect("Failed to find column by index");
 
-                let region_index = region_index(cell);
+                let subgrid_index = subgrid_index(cell);
                 let subgrid = subgrids
-                    .get_mut(region_index)
+                    .get_mut(subgrid_index)
                     .expect("Failed to find region by index");
 
                 row.cells.push(cell);
@@ -48,14 +48,6 @@ impl<'a> BoardInfo<'a> {
     pub fn find_subgrid(&self, coordinate: Coordinate) -> &Region {
         find_region(&self.subgrids, coordinate)
     }
-
-    pub fn nums(&self) -> Vec<Number> {
-        self.board.cells.iter().map(|x| x.borrow().num.clone()).collect()
-    }
-
-    // pub fn region_nums(&self, coordinate: Coordinate) -> Vec<Number> {
-    //     region_nums(self, coordinate)
-    // }
 }
 
 fn cell_potentials(board_info: &BoardInfo, cell: &BoardCell) -> Vec<Number> {
@@ -113,7 +105,7 @@ fn region_nums(board_info: &BoardInfo, coordinate: Coordinate) -> Vec<Number> {
     region_cell_nums
 }
 
-fn region_index(cell: &BoardCell) -> usize {
+fn subgrid_index(cell: &BoardCell) -> usize {
     let cell = cell.borrow();
     let coordinate = cell.coordinate;
     let x = coordinate.x;
