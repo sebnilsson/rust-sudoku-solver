@@ -6,10 +6,10 @@ use rand::seq::SliceRandom;
 use rand::thread_rng;
 
 pub fn solve(board: &mut Board, context: &SolveContext) {
-    let board_info = BoardInfo::new(board);
+    let mut board_info = BoardInfo::new(board);
 
     //let last_unsolved_count = board.unsolved_count();
-    let mut last_board_nums = board_info.nums();
+    let mut last_board_nums = Vec::new(); //board_info.nums();
 
     loop {
         solve_board(&board_info);
@@ -20,18 +20,31 @@ pub fn solve(board: &mut Board, context: &SolveContext) {
             break;
         }
 
-        let is_board_identical = is_board_identical(&board_info, &last_board_nums);
-        if is_board_identical {
-            clear_random_regions(&board_info);
-        }
+        let is_identical = is_board_identical(&board_info, &last_board_nums);
+        if is_identical {
+            // let is_identical =
+            //     is_board_identical(&board_info, &last_board_nums);
+            // if is_identical {
+            //     let unsolved_count = board.unsolved_count();
+            //     panic!(
+            //         "Failed to improve unsolved cells. Stuck at: {}.",
+            //         unsolved_count
+            //     );
+            // }
 
-        // if unsolved_count == last_unsolved_count {
-        //     let unsolved_count = board.unsolved_count();
-        //     panic!(
-        //         "Failed to improve unsolved cells. Stuck at: {}.",
-        //         unsolved_count
-        //     );
-        // }
+            clear_board(&mut board_info);
+
+            last_board_nums = Vec::new();
+            println!("--- Board cleared ---");
+            println!();
+            continue;
+
+            //fill_empty_cells(&mut board_info);
+
+            //(context.callback)(&board);
+
+            //shift_cell_nums(&board_info);
+        }
 
         reset_duplicates(&board_info);
 
@@ -43,20 +56,44 @@ pub fn solve(board: &mut Board, context: &SolveContext) {
     (context.complete_callback)(&board);
 }
 
-fn clear_random_regions(board_info: &BoardInfo) {
-    // TODO: Random between rows, cols, subgrids
-    let mut regions: Vec<&Region> = board_info.subgrids.iter().collect();
-    regions.shuffle(&mut thread_rng());
-
-    let regions: Vec<&&Region>  = regions.iter().take(3).collect();
-    for region in regions {
-        for cell in region.cells.iter().filter(|x| !x.borrow().template) {
-            cell.borrow_mut().reset();
-        }
+fn clear_board(board_info: &mut BoardInfo) {
+    let solved_cells = solved_cells(board_info);
+    for cell in solved_cells {
+        cell.borrow_mut().reset();
     }
+
+    board_info.update_potentials();
 }
 
-fn is_board_identical(board_info: &BoardInfo, last_board_nums: &Vec<Number>) -> bool {
+// fn fill_empty_cells(board_info: &BoardInfo) {
+//     for subgrid in board_info.subgrids.iter() {
+//         let empty_cells: Vec<&&BoardCell> =
+//             subgrid.cells.iter().filter(|x| x.borrow().is_empty()).collect();
+
+//         for cell in empty_cells {
+//             let region_nums = subgrid.nums();
+//             let available_nums = Number::all();
+//             let mut available_nums: Vec<&Number> = available_nums
+//                 .iter()
+//                 .clone()
+//                 .filter(|x| !region_nums.contains(x))
+//                 .collect();
+//             available_nums.shuffle(&mut thread_rng());
+
+//             let num = available_nums.first();
+
+//             match num {
+//                 Some(x) => cell.borrow_mut().set_num(x),
+//                 _ => {}
+//             }
+//         }
+//     }
+// }
+
+fn is_board_identical(
+    board_info: &BoardInfo,
+    last_board_nums: &Vec<Number>,
+) -> bool {
     let board_nums = board_info.nums();
     &board_nums == last_board_nums
 }
@@ -85,7 +122,7 @@ fn solve_cell(cell: &BoardCell, board_info: &BoardInfo) {
     let cell_potential = cell_potential.unwrap();
     cell.borrow_mut().set_num(cell_potential);
 
-    board_info.update_cell_potentials(cell);
+    board_info.update_cell_region_potentials(cell);
 }
 
 fn reset_duplicates(board_info: &BoardInfo) {
@@ -133,6 +170,25 @@ fn duplicate_region_cells<'a>(regions: &'a Vec<Region>) -> Vec<&'a BoardCell> {
     }
 
     duplicates
+}
+
+fn solved_cells<'a>(board_info: &'a BoardInfo) -> Vec<&'a BoardCell> {
+    let mut rows: Vec<&Region> = board_info.rows.iter().collect();
+    rows.shuffle(&mut thread_rng());
+
+    let mut solved_cells = Vec::new();
+
+    for row in rows {
+        for ref_cell in row.cells.iter() {
+            let cell = ref_cell.borrow();
+
+            if !cell.template && cell.is_solved() {
+                solved_cells.push(*ref_cell);
+            }
+        }
+    }
+
+    solved_cells
 }
 
 fn unsolved_cells<'a>(board_info: &'a BoardInfo) -> Vec<&'a BoardCell> {

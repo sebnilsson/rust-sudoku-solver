@@ -11,6 +11,10 @@ impl Cell {
 }
 
 impl Cell {
+    // pub fn is_empty(&self) -> bool {
+    //     self.num == Number::N0
+    // }
+
     pub fn is_solved(&self) -> bool {
         self.num != Number::N0
     }

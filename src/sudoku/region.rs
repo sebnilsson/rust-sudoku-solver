@@ -6,3 +6,13 @@ impl<'a> Region<'a> {
         Self { cells }
     }
 }
+
+// impl<'a> Region<'a> {
+//     pub fn nums(&self) -> Vec<Number> {
+//         self.cells
+//             .iter()
+//             .filter(|x| !x.borrow().is_empty())
+//             .map(|x| x.borrow().num)
+//             .collect()
+//     }
+// }

@@ -57,12 +57,18 @@ impl<'a> BoardInfo<'a> {
         region_nums(self, coordinate)
     }
 
-    pub fn update_cell_potentials(&self, cell: &BoardCell) {
-        update_cell_potentials(self, cell);
+    pub fn update_cell_region_potentials(&self, cell: &BoardCell) {
+        update_cell_region_potentials(self, cell);
     }
 
     pub fn update_potentials(&mut self) {
         board_potentials(self);
+    }
+}
+
+fn board_potentials(board_info: &mut BoardInfo) {
+    for cell in board_info.board.cells.iter() {
+        update_cell_potentials(board_info, cell);
     }
 }
 
@@ -105,16 +111,27 @@ fn find_region<'a>(
     }
 }
 
-fn region_nums(board_info: &BoardInfo, coordinate: Coordinate) -> Vec<Number> {
+fn regions_cells<'a>(
+    board_info: &'a BoardInfo,
+    coordinate: Coordinate,
+) -> Vec<&'a BoardCell> {
     let column = board_info.find_column(coordinate);
     let row = board_info.find_row(coordinate);
     let subgrid = board_info.find_subgrid(coordinate);
 
-    let region_cells =
-        column.cells.iter().chain(row.cells.iter().chain(subgrid.cells.iter()));
+    column
+        .cells
+        .iter()
+        .chain(row.cells.iter().chain(subgrid.cells.iter()))
+        .map(|x| *x)
+        .collect()
+}
+
+fn region_nums(board_info: &BoardInfo, coordinate: Coordinate) -> Vec<Number> {
+    let region_cells = regions_cells(board_info, coordinate);
 
     let mut region_cell_nums: Vec<Number> =
-        region_cells.map(|x| x.borrow().num).collect();
+        region_cells.iter().map(|x| x.borrow().num).collect();
     region_cell_nums.sort();
     region_cell_nums.dedup();
     region_cell_nums
@@ -153,6 +170,16 @@ fn region_index(cell: &BoardCell) -> usize {
     }
 }
 
+fn update_cell_region_potentials(board_info: &BoardInfo, cell: &BoardCell) {
+    let regions_cells = regions_cells(board_info, cell.borrow().coordinate);
+    let regions_cells: Vec<&&BoardCell> =
+        regions_cells.iter().filter(|x| !x.borrow().template).collect();
+
+    for cell in regions_cells {
+        update_cell_potentials(board_info, cell);
+    }
+}
+
 fn update_cell_potentials(board_info: &BoardInfo, cell: &BoardCell) {
     let coordinate;
     {
@@ -164,10 +191,4 @@ fn update_cell_potentials(board_info: &BoardInfo, cell: &BoardCell) {
 
     let mut cell = cell.borrow_mut();
     cell.update_potentials(region_nums);
-}
-
-fn board_potentials(board_info: &mut BoardInfo) {
-    for cell in board_info.board.cells.iter() {
-        update_cell_potentials(board_info, cell);
-    }
 }

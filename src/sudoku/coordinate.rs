@@ -11,7 +11,7 @@ impl Coordinate {
 
 impl fmt::Display for Coordinate {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "(x: {}, y: {})", self.x, self.y)
+        write!(f, "(x: {}, y: {})", self.x, self.y)
     }
 }
 
