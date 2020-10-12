@@ -16,8 +16,4 @@ pub fn fill(board: &mut Board, sudoku_content: String) {
             cell.borrow_mut().set_num_template(number);
         }
     }
-
-    let mut board_info = BoardInfo::new(&board);
-
-    board_info.update_potentials();
 }

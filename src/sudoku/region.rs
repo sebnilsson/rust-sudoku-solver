@@ -7,6 +7,18 @@ impl<'a> Region<'a> {
     }
 }
 
+impl<'a> Region<'a> {
+    pub fn for_board() -> Vec<Region<'a>> {
+        let mut regions: Vec<Region> = Vec::new();
+
+        for _ in 0..BOARD_WIDTH {
+            regions.push(Region::new());
+        }
+
+        regions
+    }
+}
+
 // impl<'a> Region<'a> {
 //     pub fn nums(&self) -> Vec<Number> {
 //         self.cells

@@ -46,8 +46,7 @@ type BoardCell = RefCell<Cell>;
 pub struct Cell {
     coordinate: Coordinate,
     num: Number,
-    potentials: Vec<Number>,
-    template: bool,
+    is_template: bool,
 }
 
 #[derive(Copy, Clone, Debug, Ord, Eq)]

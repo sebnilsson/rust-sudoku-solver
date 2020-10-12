@@ -2,9 +2,9 @@ use super::*;
 
 impl<'a> BoardInfo<'a> {
     pub fn new(board: &'a Board) -> BoardInfo {
-        let mut columns = create_regions();
-        let mut rows = create_regions();
-        let mut subgrids = create_regions();
+        let mut columns = Region::for_board();
+        let mut rows = Region::for_board();
+        let mut subgrids = Region::for_board();
 
         for x in 0..BOARD_WIDTH {
             for y in 0..BOARD_WIDTH {
@@ -53,23 +53,9 @@ impl<'a> BoardInfo<'a> {
         self.board.cells.iter().map(|x| x.borrow().num.clone()).collect()
     }
 
-    pub fn region_nums(&self, coordinate: Coordinate) -> Vec<Number> {
-        region_nums(self, coordinate)
-    }
-
-    pub fn update_cell_region_potentials(&self, cell: &BoardCell) {
-        update_cell_region_potentials(self, cell);
-    }
-
-    pub fn update_potentials(&mut self) {
-        board_potentials(self);
-    }
-}
-
-fn board_potentials(board_info: &mut BoardInfo) {
-    for cell in board_info.board.cells.iter() {
-        update_cell_potentials(board_info, cell);
-    }
+    // pub fn region_nums(&self, coordinate: Coordinate) -> Vec<Number> {
+    //     region_nums(self, coordinate)
+    // }
 }
 
 fn cell_potentials(board_info: &BoardInfo, cell: &BoardCell) -> Vec<Number> {
@@ -81,16 +67,6 @@ fn cell_potentials(board_info: &BoardInfo, cell: &BoardCell) -> Vec<Number> {
         .filter(|x| !region_nums.contains(x))
         .map(|x| x.clone())
         .collect()
-}
-
-fn create_regions<'a>() -> Vec<Region<'a>> {
-    let mut regions: Vec<Region> = Vec::new();
-
-    for _ in 0..BOARD_WIDTH {
-        regions.push(Region::new());
-    }
-
-    regions
 }
 
 fn find_region<'a>(
@@ -168,27 +144,4 @@ fn region_index(cell: &BoardCell) -> usize {
             8
         }
     }
-}
-
-fn update_cell_region_potentials(board_info: &BoardInfo, cell: &BoardCell) {
-    let regions_cells = regions_cells(board_info, cell.borrow().coordinate);
-    let regions_cells: Vec<&&BoardCell> =
-        regions_cells.iter().filter(|x| !x.borrow().template).collect();
-
-    for cell in regions_cells {
-        update_cell_potentials(board_info, cell);
-    }
-}
-
-fn update_cell_potentials(board_info: &BoardInfo, cell: &BoardCell) {
-    let coordinate;
-    {
-        let cell = cell.borrow_mut();
-        coordinate = Coordinate::new(cell.coordinate.x, cell.coordinate.y);
-    }
-
-    let region_nums = board_info.region_nums(coordinate);
-
-    let mut cell = cell.borrow_mut();
-    cell.update_potentials(region_nums);
 }

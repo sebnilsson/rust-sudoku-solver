@@ -38,12 +38,6 @@ pub fn solve(board: &mut Board, context: &SolveContext) {
             println!("--- Board cleared ---");
             println!();
             continue;
-
-            //fill_empty_cells(&mut board_info);
-
-            //(context.callback)(&board);
-
-            //shift_cell_nums(&board_info);
         }
 
         reset_duplicates(&board_info);
@@ -61,34 +55,7 @@ fn clear_board(board_info: &mut BoardInfo) {
     for cell in solved_cells {
         cell.borrow_mut().reset();
     }
-
-    board_info.update_potentials();
 }
-
-// fn fill_empty_cells(board_info: &BoardInfo) {
-//     for subgrid in board_info.subgrids.iter() {
-//         let empty_cells: Vec<&&BoardCell> =
-//             subgrid.cells.iter().filter(|x| x.borrow().is_empty()).collect();
-
-//         for cell in empty_cells {
-//             let region_nums = subgrid.nums();
-//             let available_nums = Number::all();
-//             let mut available_nums: Vec<&Number> = available_nums
-//                 .iter()
-//                 .clone()
-//                 .filter(|x| !region_nums.contains(x))
-//                 .collect();
-//             available_nums.shuffle(&mut thread_rng());
-
-//             let num = available_nums.first();
-
-//             match num {
-//                 Some(x) => cell.borrow_mut().set_num(x),
-//                 _ => {}
-//             }
-//         }
-//     }
-// }
 
 fn is_board_identical(
     board_info: &BoardInfo,
@@ -102,7 +69,10 @@ fn solve_board(board_info: &BoardInfo) {
     let mut unsolved_cells = unsolved_cells(board_info);
 
     while unsolved_cells.len() > 0 {
-        unsolved_cells.sort_by_key(|x| x.borrow().potentials.len());
+        unsolved_cells.sort_by_key(|x| {
+            let potentials = board_info.cell_potentials(x);
+            potentials.len()
+        });
         unsolved_cells.reverse();
 
         let cell = unsolved_cells.pop().unwrap();
@@ -121,8 +91,6 @@ fn solve_cell(cell: &BoardCell, board_info: &BoardInfo) {
 
     let cell_potential = cell_potential.unwrap();
     cell.borrow_mut().set_num(cell_potential);
-
-    board_info.update_cell_region_potentials(cell);
 }
 
 fn reset_duplicates(board_info: &BoardInfo) {
@@ -151,7 +119,7 @@ fn duplicate_region_cells<'a>(regions: &'a Vec<Region>) -> Vec<&'a BoardCell> {
             .iter()
             .filter(|x| {
                 let cell = x.borrow();
-                !cell.template && cell.num != Number::N0
+                !cell.is_template && cell.num != Number::N0
             })
             .collect();
 
@@ -182,7 +150,7 @@ fn solved_cells<'a>(board_info: &'a BoardInfo) -> Vec<&'a BoardCell> {
         for ref_cell in row.cells.iter() {
             let cell = ref_cell.borrow();
 
-            if !cell.template && cell.is_solved() {
+            if !cell.is_template && cell.is_solved() {
                 solved_cells.push(*ref_cell);
             }
         }
@@ -201,7 +169,7 @@ fn unsolved_cells<'a>(board_info: &'a BoardInfo) -> Vec<&'a BoardCell> {
         for ref_cell in row.cells.iter() {
             let cell = ref_cell.borrow();
 
-            if !cell.template && !cell.is_solved() {
+            if !cell.is_template && !cell.is_solved() {
                 unsolved_cells.push(*ref_cell);
             }
         }
