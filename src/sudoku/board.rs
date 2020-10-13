@@ -31,9 +31,9 @@ impl Board {
         find_cell(&self.cells, coordinate)
     }
 
-    pub fn unsolved_count(&self) -> usize {
-        self.cells.iter().map(|x| x.borrow()).filter(|x| !x.is_solved()).count()
-    }
+    // pub fn unsolved_count(&self) -> usize {
+    //     self.cells.iter().map(|x| x.borrow()).filter(|x| !x.is_solved()).count()
+    // }
 }
 
 impl std::fmt::Display for Board {

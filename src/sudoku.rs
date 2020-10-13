@@ -11,15 +11,16 @@ mod region;
 
 pub const BOARD_WIDTH: u8 = 9;
 
-pub fn solve(sudoku_content: String, context: &SolveContext) {
+pub fn solve(sudoku_content: String, context: &mut SolveContext) {
     let mut board = Board::parse(sudoku_content);
 
     board_solver::solve(&mut board, context);
 }
 
 pub struct SolveContext {
-    pub callback: fn(&Board),
-    pub complete_callback: fn(&Board),
+    pub callback: fn(&Board, &usize),
+    pub complete_callback: fn(&Board, &usize),
+    pub solve_count: usize,
 }
 
 #[derive(Debug)]
