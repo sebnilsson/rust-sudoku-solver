@@ -9,8 +9,8 @@ impl Cell {
 }
 
 impl Cell {
-    pub fn is_solved(&self) -> bool {
-        self.num != Number::N0
+    pub fn is_filled(&self) -> bool {
+        self.num.is_filled()
     }
 
     pub fn reset(&mut self) {
@@ -21,7 +21,7 @@ impl Cell {
         let num = Number::parse(value);
         self.set_num(&num);
 
-        if num != Number::N0 {
+        if num.is_filled() {
             self.is_template = true;
         }
     }

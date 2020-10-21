@@ -32,7 +32,7 @@ impl Board {
     }
 
     // pub fn unsolved_count(&self) -> usize {
-    //     self.cells.iter().map(|x| x.borrow()).filter(|x| !x.is_solved()).count()
+    //     self.cells.iter().map(|x| x.borrow()).filter(|x| !x.is_filled()).count()
     // }
 }
 

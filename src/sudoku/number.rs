@@ -39,6 +39,10 @@ impl Number {
 }
 
 impl Number {
+    pub fn is_filled(&self) -> bool {
+        self != &Number::N0
+    }
+
     pub fn to_usize(&self) -> usize {
         match self {
             Number::N0 => 0,

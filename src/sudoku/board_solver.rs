@@ -62,7 +62,7 @@ fn unsolved_cells<'a>(board_info: &'a BoardInfo) -> Vec<&'a BoardCell> {
         .iter()
         .filter(|x| {
             let cell = x.borrow();
-            !cell.is_template && !cell.is_solved()
+            !cell.is_template && !cell.is_filled()
         })
         .map(|x| {
             let potentials = board_info.cell_potentials(x);
@@ -71,9 +71,6 @@ fn unsolved_cells<'a>(board_info: &'a BoardInfo) -> Vec<&'a BoardCell> {
         .collect();
 
     unsolved.shuffle(&mut thread_rng());
-
     unsolved.sort_by_key(|x| x.1);
-    //unsolved.reverse();
-
     unsolved.iter().map(|x| x.0).collect()
 }
