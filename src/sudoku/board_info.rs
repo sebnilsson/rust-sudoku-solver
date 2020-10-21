@@ -100,7 +100,7 @@ fn region_nums(board_info: &BoardInfo, coordinate: Coordinate) -> Vec<Number> {
 
     let mut region_cell_nums: Vec<Number> =
         region_cells.iter().map(|x| x.borrow().num).collect();
-        
+
     region_cell_nums.sort();
     region_cell_nums.dedup();
     region_cell_nums

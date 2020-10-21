@@ -18,6 +18,7 @@ fn main() {
         callback: board_callback,
         complete_callback: board_complete_callback,
         solve_count: 0,
+        use_random: true
     };
 
     sudoku::solve(sudoku_content, &mut callbacks);

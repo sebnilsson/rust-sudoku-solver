@@ -21,6 +21,7 @@ pub struct SolveContext {
     pub callback: fn(&Board, &usize),
     pub complete_callback: fn(&Board, &usize),
     pub solve_count: usize,
+    pub use_random: bool,
 }
 
 #[derive(Debug)]
