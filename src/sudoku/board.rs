@@ -36,12 +36,11 @@ impl std::fmt::Display for Board {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let board_info = BoardInfo::new(self);
         let rows = board_info.rows.iter();
-        let row_count = rows.len() - 1;
+        let row_count = board_info.rows.len();
 
         let mut s = String::new();
-        let mut index = 0;
 
-        for row in rows {
+        for (index, row) in rows.enumerate() {
             let nums = row.cells.iter().map(|x| x.borrow()).map(|x| {
                 let s = x.num.to_str();
                 if x.is_template {
@@ -56,15 +55,12 @@ impl std::fmt::Display for Board {
             let r = r.as_str();
 
             s.push_str(r);
-            if index != row_count {
+            if index + 1 < row_count {
                 s.push_str(LINE_ENDING);
             }
-
-            index += 1;
         }
 
-        let line_ending = String::from(LINE_ENDING);
-        let s = s.trim_end_matches(&line_ending);
+        let s = s.trim_end_matches(LINE_ENDING);
 
         write!(f, "{}", s)
     }
@@ -85,19 +81,19 @@ fn create_board() -> Board {
     Board { cells }
 }
 
-fn find_cell(cells: &Vec<BoardCell>, coordinate: Coordinate) -> &BoardCell {
+fn find_cell(cells: &[BoardCell], coordinate: Coordinate) -> &BoardCell {
     let index = Board::index(coordinate);
-    let cell = cells.get(index);
-
-    cell.expect(format!("Failed finding cell: {}", coordinate).as_str())
+    cells
+        .get(index)
+        .unwrap_or_else(|| panic!("Failed finding cell: {}", coordinate))
 }
 
 fn find_cell_mut(
-    cells: &mut Vec<BoardCell>,
+    cells: &mut [BoardCell],
     coordinate: Coordinate,
 ) -> &mut BoardCell {
     let index = Board::index(coordinate);
-    let cell = cells.get_mut(index);
-
-    cell.expect(format!("Failed finding cell: {}", coordinate).as_str())
+    cells
+        .get_mut(index)
+        .unwrap_or_else(|| panic!("Failed finding cell: {}", coordinate))
 }

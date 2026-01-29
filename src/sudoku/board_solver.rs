@@ -1,5 +1,3 @@
-extern crate rand;
-
 use super::*;
 
 use rand::seq::SliceRandom;
@@ -15,25 +13,18 @@ pub fn solve(board: &mut Board, context: &mut SolveContext) {
     (context.complete_callback)(&board, &context.solve_count);
 }
 
-fn can_set_num(
-    cell: &RefCell<Cell>,
-    num: Number,
-    board_info: &BoardInfo,
-) -> bool {
+fn can_set_num(cell: &BoardCell, num: Number, board_info: &BoardInfo) -> bool {
     let potentials = board_info.cell_potentials(cell);
     potentials.contains(&num)
 }
 
 fn solve_board(board_info: &BoardInfo, context: &mut SolveContext) -> bool {
-    let unsolved_cells = unsolved_cells(board_info, &context);
-    let cell = unsolved_cells.first();
-    if cell.is_none() {
+    let unsolved_cells = unsolved_cells(board_info, context);
+    let Some(cell) = unsolved_cells.first() else {
         return true;
-    }
+    };
 
-    let cell = cell.unwrap();
-
-    let mut nums = Number::all().clone();
+    let mut nums = Number::all().to_vec();
     if context.use_random {
         nums.shuffle(&mut thread_rng());
     }
@@ -42,7 +33,7 @@ fn solve_board(board_info: &BoardInfo, context: &mut SolveContext) -> bool {
         if can_set_num(cell, num, board_info) {
             cell.borrow_mut().set_num(&num);
 
-            context.solve_count = context.solve_count + 1;
+            context.solve_count += 1;
 
             (context.callback)(board_info.board, &context.solve_count);
 
@@ -79,5 +70,5 @@ fn unsolved_cells<'a>(
         unsolved.shuffle(&mut thread_rng());
     }
     unsolved.sort_by_key(|x| x.1);
-    unsolved.iter().map(|x| x.0).collect()
+    unsolved.iter().map(|(cell, _)| *cell).collect()
 }

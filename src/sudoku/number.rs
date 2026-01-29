@@ -23,8 +23,8 @@ impl Number {
         }
     }
 
-    pub fn all() -> Vec<Self> {
-        vec![
+    pub fn all() -> &'static [Self] {
+        const ALL: [Number; 9] = [
             Number::N1,
             Number::N2,
             Number::N3,
@@ -34,7 +34,8 @@ impl Number {
             Number::N7,
             Number::N8,
             Number::N9,
-        ]
+        ];
+        &ALL
     }
 }
 

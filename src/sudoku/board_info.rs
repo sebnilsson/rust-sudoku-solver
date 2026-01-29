@@ -1,7 +1,7 @@
 use super::*;
 
 impl<'a> BoardInfo<'a> {
-    pub fn new(board: &'a Board) -> BoardInfo {
+    pub fn new(board: &'a Board) -> BoardInfo<'a> {
         let mut columns = Region::for_board();
         let mut rows = Region::for_board();
         let mut subgrids = Region::for_board();
@@ -54,23 +54,21 @@ fn cell_potentials(board_info: &BoardInfo, cell: &BoardCell) -> Vec<Number> {
     let region_nums = region_nums(board_info, cell.borrow().coordinate);
 
     Number::all()
-        .clone()
         .iter()
+        .copied()
         .filter(|x| !region_nums.contains(x))
-        .map(|x| x.clone())
         .collect()
 }
 
 fn find_region<'a>(
-    regions: &'a Vec<Region>,
+    regions: &'a [Region],
     coordinate: Coordinate,
 ) -> &'a Region<'a> {
-    let region = regions.into_iter().find(|region| {
+    let region = regions.iter().find(|region| {
         region
             .cells
             .iter()
-            .map(|x| x.borrow())
-            .any(|cell| cell.coordinate == coordinate)
+            .any(|cell| cell.borrow().coordinate == coordinate)
     });
 
     match region {
@@ -91,7 +89,7 @@ fn regions_cells<'a>(
         .cells
         .iter()
         .chain(row.cells.iter().chain(subgrid.cells.iter()))
-        .map(|x| *x)
+        .copied()
         .collect()
 }
 
@@ -101,7 +99,7 @@ fn region_nums(board_info: &BoardInfo, coordinate: Coordinate) -> Vec<Number> {
     let mut region_cell_nums: Vec<Number> =
         region_cells.iter().map(|x| x.borrow().num).collect();
 
-    region_cell_nums.sort();
+    region_cell_nums.sort_unstable();
     region_cell_nums.dedup();
     region_cell_nums
 }
