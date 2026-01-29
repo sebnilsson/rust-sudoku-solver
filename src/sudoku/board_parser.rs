@@ -1,6 +1,6 @@
 use super::*;
 
-pub fn fill(board: &mut Board, sudoku_content: String) {
+pub fn fill(board: &mut Board, sudoku_content: &str) {
     let sudoku_lines: Vec<_> = sudoku_content.lines().collect();
 
     for x in 0..BOARD_WIDTH as usize {

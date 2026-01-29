@@ -8,7 +8,7 @@ const LINE_ENDING: &'static str = "\r\n";
 const LINE_ENDING: &'static str = "\n";
 
 impl Board {
-    pub fn parse(sudoku_content: String) -> Self {
+    pub fn parse(sudoku_content: &str) -> Self {
         let mut board = create_board();
         board_parser::fill(&mut board, sudoku_content);
 
@@ -35,34 +35,29 @@ impl Board {
 impl std::fmt::Display for Board {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let board_info = BoardInfo::new(self);
-        let rows = board_info.rows.iter();
         let row_count = board_info.rows.len();
 
-        let mut s = String::new();
-
-        for (index, row) in rows.enumerate() {
-            let nums = row.cells.iter().map(|x| x.borrow()).map(|x| {
-                let s = x.num.to_str();
-                if x.is_template {
-                    format!("\x1b[42;1m{}\x1b[0m", s)
-                } else {
-                    s
+        for (row_index, row) in board_info.rows.iter().enumerate() {
+            for (cell_index, cell) in row.cells.iter().enumerate() {
+                if cell_index > 0 {
+                    write!(f, " ")?;
                 }
-            });
-            let nums: Vec<_> = nums.collect();
 
-            let r = nums.join(" ");
-            let r = r.as_str();
+                let cell = cell.borrow();
+                let s = cell.num.to_str();
+                if cell.is_template {
+                    write!(f, "\x1b[42;1m{}\x1b[0m", s)?;
+                } else {
+                    write!(f, "{}", s)?;
+                }
+            }
 
-            s.push_str(r);
-            if index + 1 < row_count {
-                s.push_str(LINE_ENDING);
+            if row_index + 1 < row_count {
+                write!(f, "{}", LINE_ENDING)?;
             }
         }
 
-        let s = s.trim_end_matches(LINE_ENDING);
-
-        write!(f, "{}", s)
+        Ok(())
     }
 }
 

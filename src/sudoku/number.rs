@@ -59,13 +59,19 @@ impl Number {
         }
     }
 
-    pub fn to_str(&self) -> String {
-        let usize = self.to_usize();
-        if usize <= 0 {
-            return String::from("_");
+    pub fn to_str(&self) -> &'static str {
+        match self {
+            Number::N0 => "_",
+            Number::N1 => "1",
+            Number::N2 => "2",
+            Number::N3 => "3",
+            Number::N4 => "4",
+            Number::N5 => "5",
+            Number::N6 => "6",
+            Number::N7 => "7",
+            Number::N8 => "8",
+            Number::N9 => "9",
         }
-
-        format!("{}", usize)
     }
 }
 

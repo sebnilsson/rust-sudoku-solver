@@ -21,7 +21,7 @@ fn main() {
         use_random: true,
     };
 
-    sudoku::solve(sudoku_content, &mut callbacks);
+    sudoku::solve(&sudoku_content, &mut callbacks);
 
     let elapsed = now.elapsed();
     println!("Time elapsed: {:.2} seconds", elapsed.as_secs_f32());
