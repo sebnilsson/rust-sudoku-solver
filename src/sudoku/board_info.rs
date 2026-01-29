@@ -37,15 +37,15 @@ impl<'a> BoardInfo<'a> {
         cell_potentials(self, cell)
     }
 
-    pub fn find_column(&self, coordinate: Coordinate) -> &Region {
+    pub fn find_column(&self, coordinate: Coordinate) -> &Region<'_> {
         find_region(&self.columns, coordinate)
     }
 
-    pub fn find_row(&self, coordinate: Coordinate) -> &Region {
+    pub fn find_row(&self, coordinate: Coordinate) -> &Region<'_> {
         find_region(&self.rows, coordinate)
     }
 
-    pub fn find_subgrid(&self, coordinate: Coordinate) -> &Region {
+    pub fn find_subgrid(&self, coordinate: Coordinate) -> &Region<'_> {
         find_region(&self.subgrids, coordinate)
     }
 }

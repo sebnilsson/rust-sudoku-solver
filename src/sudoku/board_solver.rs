@@ -31,7 +31,7 @@ fn solve_board(board_info: &BoardInfo, context: &mut SolveContext) -> bool {
 
     for num in nums {
         if can_set_num(cell, num, board_info) {
-            cell.borrow_mut().set_num(&num);
+            cell.borrow_mut().set_num(num);
 
             context.solve_count += 1;
 
