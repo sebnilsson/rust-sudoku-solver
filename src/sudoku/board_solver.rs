@@ -19,8 +19,8 @@ fn can_set_num(cell: &BoardCell, num: Number, board: &Board, board_info: &BoardI
 }
 
 fn solve_board(board: &Board, board_info: &BoardInfo, context: &mut SolveContext) -> bool {
-    let unsolved_cells = unsolved_cells(board, board_info, context);
-    let Some(cell) = unsolved_cells.first() else {
+    let unsolved = unsolved_cells(board, board_info, context);
+    let Some(cell) = unsolved.first() else {
         return true;
     };
 

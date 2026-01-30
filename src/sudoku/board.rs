@@ -63,7 +63,7 @@ impl std::fmt::Display for Board {
 }
 
 fn create_board() -> Board {
-    let mut cells = Vec::new();
+    let mut cells = Vec::with_capacity((BOARD_WIDTH as usize) * (BOARD_WIDTH as usize));
 
     for y in 0..BOARD_WIDTH {
         for x in 0..BOARD_WIDTH {

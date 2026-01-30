@@ -72,60 +72,36 @@ fn find_region(regions: &[Region], coordinate: Coordinate) -> &Region {
     }
 }
 
-fn regions_cells(board_info: &BoardInfo, coordinate: Coordinate) -> Vec<Coordinate> {
+fn region_nums(board_info: &BoardInfo, board: &Board, coordinate: Coordinate) -> Vec<Number> {
     let column = board_info.find_column(coordinate);
     let row = board_info.find_row(coordinate);
     let subgrid = board_info.find_subgrid(coordinate);
 
-    column
+    let mut present = [false; 10];
+
+    for coord in column
         .cells
         .iter()
-        .chain(row.cells.iter().chain(subgrid.cells.iter()))
+        .chain(row.cells.iter())
+        .chain(subgrid.cells.iter())
+    {
+        let num = board.find_cell(*coord).borrow().num;
+        let idx = num.to_usize();
+        if idx > 0 {
+            present[idx] = true;
+        }
+    }
+
+    Number::all()
+        .iter()
         .copied()
+        .filter(|num| present[num.to_usize()])
         .collect()
-}
-
-fn region_nums(board_info: &BoardInfo, board: &Board, coordinate: Coordinate) -> Vec<Number> {
-    let region_cells = regions_cells(board_info, coordinate);
-
-    let mut region_cell_nums: Vec<Number> =
-        region_cells
-            .iter()
-            .map(|coord| board.find_cell(*coord).borrow().num)
-            .collect();
-
-    region_cell_nums.sort_unstable();
-    region_cell_nums.dedup();
-    region_cell_nums
 }
 
 fn subgrid_index(coordinate: Coordinate) -> usize {
     let x = coordinate.x;
     let y = coordinate.y;
 
-    if x < 3 {
-        if y < 3 {
-            0
-        } else if y < 6 {
-            1
-        } else {
-            2
-        }
-    } else if x < 6 {
-        if y < 3 {
-            3
-        } else if y < 6 {
-            4
-        } else {
-            5
-        }
-    } else {
-        if y < 3 {
-            6
-        } else if y < 6 {
-            7
-        } else {
-            8
-        }
-    }
+    ((y / 3) * 3 + (x / 3)) as usize
 }
