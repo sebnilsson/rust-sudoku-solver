@@ -12,11 +12,11 @@ impl<'a> BoardInfo<'a> {
                 let cell = board.find_cell(coordinate);
 
                 let row = rows
-                    .get_mut(x as usize)
+                    .get_mut(y as usize)
                     .expect("Failed to find row by index");
 
                 let column = columns
-                    .get_mut(y as usize)
+                    .get_mut(x as usize)
                     .expect("Failed to find column by index");
 
                 let subgrid_index = subgrid_index(cell);
