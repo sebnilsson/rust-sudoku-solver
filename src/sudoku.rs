@@ -30,16 +30,15 @@ pub struct Board {
 }
 
 #[derive(Debug)]
-pub struct BoardInfo<'a> {
-    board: &'a Board,
-    columns: Vec<Region<'a>>,
-    rows: Vec<Region<'a>>,
-    subgrids: Vec<Region<'a>>,
+pub struct BoardInfo {
+    columns: Vec<Region>,
+    rows: Vec<Region>,
+    subgrids: Vec<Region>,
 }
 
 #[derive(Debug)]
-pub struct Region<'a> {
-    cells: Vec<&'a BoardCell>,
+pub struct Region {
+    cells: Vec<Coordinate>,
 }
 
 type BoardCell = RefCell<Cell>;

@@ -34,15 +34,16 @@ impl Board {
 
 impl std::fmt::Display for Board {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let board_info = BoardInfo::new(self);
+        let board_info = BoardInfo::new();
         let row_count = board_info.rows.len();
 
         for (row_index, row) in board_info.rows.iter().enumerate() {
-            for (cell_index, cell) in row.cells.iter().enumerate() {
+            for (cell_index, coordinate) in row.cells.iter().enumerate() {
                 if cell_index > 0 {
                     write!(f, " ")?;
                 }
 
+                let cell = self.find_cell(*coordinate);
                 let cell = cell.borrow();
                 let s = cell.num.to_str();
                 if cell.is_template {
