@@ -1,7 +1,7 @@
 use super::*;
 
 impl<'a> BoardInfo<'a> {
-    pub fn new(board: &'a Board) -> BoardInfo<'a> {
+    pub fn new(board: &'a Board) -> Self {
         let mut columns = Region::for_board();
         let mut rows = Region::for_board();
         let mut subgrids = Region::for_board();
@@ -61,7 +61,7 @@ fn cell_potentials(board_info: &BoardInfo, cell: &BoardCell) -> Vec<Number> {
 }
 
 fn find_region<'a>(
-    regions: &'a [Region],
+    regions: &'a [Region<'a>],
     coordinate: Coordinate,
 ) -> &'a Region<'a> {
     let region = regions.iter().find(|region| {
@@ -78,7 +78,7 @@ fn find_region<'a>(
 }
 
 fn regions_cells<'a>(
-    board_info: &'a BoardInfo,
+    board_info: &'a BoardInfo<'a>,
     coordinate: Coordinate,
 ) -> Vec<&'a BoardCell> {
     let column = board_info.find_column(coordinate);

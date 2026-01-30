@@ -1,6 +1,6 @@
 use super::*;
 
-impl<'a> Region<'a> {
+impl Region<'_> {
     pub fn new() -> Self {
         let cells: Vec<_> = Vec::new();
         Self { cells }
